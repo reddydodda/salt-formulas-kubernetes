@@ -180,10 +180,12 @@ criproxy_service:
 /etc/criproxy:
   file.absent
 
+{%- if not common.get('containerd', {}).get('enabled') %}
 dockershim_service:
   service.dead:
   - name: dockershim
   - enable: False
+{%- endif %}
 
 criproxy_service:
   service.dead:

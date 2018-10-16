@@ -124,8 +124,6 @@ spec:
         - mountPath: /run
           mountPropagation: Bidirectional
           name: run
-        - mountPath: /var/run/docker.sock
-          name: dockersock
         - mountPath: /hostlog
           name: log
         - mountPath: /host-var-lib
@@ -261,9 +259,6 @@ spec:
       - hostPath:
           path: /run
         name: run
-      - hostPath:
-          path: /var/run/docker.sock
-        name: dockersock
       - hostPath:
           path: /var/lib/virtlet
         name: virtlet
