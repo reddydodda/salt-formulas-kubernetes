@@ -5,29 +5,15 @@ kubernetes_pkgs:
   - names: {{ common.pkgs }}
 
 {%- if common.hyperkube is defined %}
-/tmp/hyperkube:
-  file.directory:
-    - user: root
-    - group: root
-
-hyperkube-copy:
-  cmd.run:
-    - name: docker run --rm -v /tmp/hyperkube:/tmp/hyperkube --entrypoint cp {{ common.hyperkube.image }} -vr /hyperkube /tmp/hyperkube
-    - require:
-      - file: /tmp/hyperkube
-    {%- if grains.get('noservices') %}
-    - onlyif: /bin/false
-    {%- endif %}
 
 /usr/bin/hyperkube:
   file.managed:
-    - source: /tmp/hyperkube/hyperkube
+    - source: {{ common.hyperkube.source }}
     - mode: 751
     - makedirs: true
     - user: root
     - group: root
-    - require:
-      - cmd: hyperkube-copy
+    - source_hash: {{ common.hyperkube.source_hash }}
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}

@@ -4,7 +4,8 @@ kubernetes:
     cluster_name: cluster
     hyperkube:
       image: hyperkube-amd64:v1.6.4-3
-      hash: hnsj0XqABgrSww7Nqo7UVTSZLJUt2XRd
+      source: hyperkube-amd64:v1.6.4-3
+      source_hash: hnsj0XqABgrSww7Nqo7UVTSZLJUt2XRd
     addons:
       dns:
         domain: cluster.local
