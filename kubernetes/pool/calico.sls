@@ -1,80 +1,55 @@
 {%- from "kubernetes/map.jinja" import pool with context %}
 {%- if pool.enabled %}
 
-/tmp/calico/:
-  file.directory:
-      - user: root
-      - group: root
-
-copy-calico-ctl:
-  cmd.run:
-    - name: docker run --rm -v /tmp/calico/:/tmp/calico/ --entrypoint cp {{ pool.network.calico.calicoctl_image }} -v /calicoctl /tmp/calico/
-    - require:
-      - file: /tmp/calico/
-    {%- if grains.get('noservices') %}
-    - onlyif: /bin/false
-    {%- endif %}
-
 /usr/bin/calicoctl:
   file.managed:
-    - source: /tmp/calico/calicoctl
+    - source: {{ pool.network.calico.calicoctl_source }}
+    - source_hash: {{ pool.network.calico.calicoctl_source_hash }}
     - mode: 751
     - user: root
     - group: root
-    - require:
-      - cmd: copy-calico-ctl
-    {%- if grains.get('noservices') %}
-    - onlyif: /bin/false
-    {%- endif %}
-
-copy-calico-node:
-  cmd.run:
-    - name: docker run --rm -v /tmp/calico/:/tmp/calico/ --entrypoint cp {{ pool.network.calico.image }} -v /bin/birdcl /tmp/calico/
-    - require:
-      - file: /tmp/calico/
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}
 
 /usr/bin/birdcl:
   file.managed:
-    - source: /tmp/calico/birdcl
+    - source: {{ pool.network.calico.birdcl_source }}
+    - source_hash: {{ pool.network.calico.birdcl_source_hash }}
     - mode: 751
     - user: root
     - group: root
-    - require:
-      - cmd: copy-calico-node
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}
 
-copy-calico-cni:
-  cmd.run:
-    - name: docker run --rm -v /tmp/calico/:/tmp/calico/ --entrypoint cp {{ pool.network.calico.cni_image }} -vr /opt/cni/bin/ /tmp/calico/
-    - require:
-      - file: /tmp/calico/
-    {%- if grains.get('noservices') %}
-    - onlyif: /bin/false
-    {%- endif %}
-
-{%- for filename in ['calico', 'calico-ipam'] %}
-
-/opt/cni/bin/{{ filename }}:
+/opt/cni/bin/calico:
   file.managed:
-    - source: /tmp/calico/bin/{{ filename }}
+    - source: {{ pool.network.calico.cni_source }}
+    - source_hash: {{ pool.network.calico.cni_source_hash }}
     - mode: 751
     - makedirs: true
     - user: root
     - group: root
-    - require:
-      - cmd: copy-calico-cni
     - require_in:
       - service: calico_node
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}
 
-{%- endfor %}
+/opt/cni/bin/calico-ipam:
+  file.managed:
+    - source: {{ pool.network.calico.cni_ipam_source }}
+    - source_hash: {{ pool.network.calico.cni_ipam_source_hash }}
+    - mode: 751
+    - makedirs: true
+    - user: root
+    - group: root
+    - require_in:
+      - service: calico_node
+    {%- if grains.get('noservices') %}
+    - onlyif: /bin/false
+    {%- endif %}
 
 /etc/cni/net.d/10-calico.conf:
   file.managed:

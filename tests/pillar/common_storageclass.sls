@@ -23,8 +23,8 @@ kubernetes:
     network:
       calico:
         enabled: true
-        calicoctl_image: calico/ctl
-        cni_image: calico/cni
+        calicoctl_source: calico/ctl
+        calicoctl_source_hash: d41d8cd98f00b204e9800998ecf8427e
         image: calico/node
         kube_controllers_image: calico/kube-controllers
         etcd:

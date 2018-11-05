@@ -95,30 +95,6 @@
     },
 }, merge=salt['pillar.get']('kubernetes:control')) %}
 
-{%- if master.get('network', {}).get('engine') == 'calico' %}
-{% set calico = salt['grains.filter_by']({
-    'default': master.network.calico
-}, merge=salt['pillar.get']('kubernetes:master:network')) %}
-{% do calico.update({
-    'enabled': true,
-    'calicoctl_image': calico.calicoctl.image,
-    'cni_image': calico.cni.image,
-}) %}
-{% do master.network.calico.update(calico) %}
-{%- endif %}
-
-{%- if pool.get('network', {}).get('engine') == 'calico' %}
-{% set calico = salt['grains.filter_by']({
-    'default': pool.network.calico
-}, merge=salt['pillar.get']('kubernetes:pool:network')) %}
-{% do calico.update({
-    'enabled': true,
-    'calicoctl_image': calico.calicoctl.image,
-    'cni_image': calico.cni.image,
-}) %}
-{% do pool.network.calico.update(calico) %}
-{%- endif %}
-
 {%- set monitoring = salt['grains.filter_by']({
   'default': {
     'instance_minor_threshold_percent': 0.3,
