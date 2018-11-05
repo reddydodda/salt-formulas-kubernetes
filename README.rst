@@ -411,12 +411,6 @@ On Master:
 .. code-block:: yaml
 
     kubernetes:
-      common:
-        addons:
-          contrail_network_controller:
-            enabled: true
-            namespace: kube-system
-            image: yashulyak/contrail-controller:latest
       master:
         network:
           opencontrail:

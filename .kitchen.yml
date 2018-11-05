@@ -72,11 +72,6 @@ suites:
       pillars-from-files:
         kubernetes.sls: tests/pillar/pool_cluster_with_domain.sls
 
-  - name: master_contrail
-    provisioner:
-      pillars-from-files:
-        kubernetes.sls: tests/pillar/master_contrail.sls
-
   - name: master_contrail4_0
     provisioner:
       pillars-from-files:

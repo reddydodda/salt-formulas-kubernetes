@@ -51,10 +51,6 @@ parameters:
         helm:
           enabled: False
           tiller_image: gcr.io/kubernetes-helm/tiller:v2.4.2
-        contrail_network_controller:
-          enabled: False
-          namespace: kube-system
-          image: yashulyak/contrail-controller:latest
         virtlet:
           enabled: False
           namespace: kube-system

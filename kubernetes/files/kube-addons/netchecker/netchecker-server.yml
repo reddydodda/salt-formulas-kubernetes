@@ -41,9 +41,6 @@ spec:
             - "-v=5"
             - "-logtostderr"
             - "-endpoint=0.0.0.0:{{ common.addons.netchecker.port }}"
-{%- if common.addons.get('contrail_network_controller', {}).get('enabled') %}
-            - "-kubeproxyinit=true"
-{%- else %}
             - "-kubeproxyinit=false"
             - "-etcd-endpoints={% for member in master.etcd.members %}https://{{ member.host }}:4001{% if not loop.last %},{% endif %}{% endfor %}"
 {%- if master.etcd.get('ssl', {}).get('enabled') %}
@@ -59,4 +56,3 @@ spec:
       - hostPath:
           path: /var/lib/etcd
         name: etcd-certs
-{%- endif %}

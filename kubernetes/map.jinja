@@ -105,15 +105,6 @@
     'cni_image': calico.cni.image,
 }) %}
 {% do master.network.calico.update(calico) %}
-{%- elif master.get('network', {}).get('engine') == 'opencontrail' %}
-{% set opencontrail = salt['grains.filter_by']({
-    'default': master.network.opencontrail
-}, merge=salt['pillar.get']('kubernetes:master:network')) %}
-{% do opencontrail.update({
-    'enabled': true,
-    'cni_image': opencontrail.contrail_cni.image,
-}) %}
-{% do master.network.opencontrail.update(opencontrail) %}
 {%- endif %}
 
 {%- if pool.get('network', {}).get('engine') == 'calico' %}
@@ -126,15 +117,6 @@
     'cni_image': calico.cni.image,
 }) %}
 {% do pool.network.calico.update(calico) %}
-{%- elif pool.get('network', {}).get('engine') == 'opencontrail' %}
-{% set opencontrail = salt['grains.filter_by']({
-    'default': pool.network.opencontrail
-}, merge=salt['pillar.get']('kubernetes:pool:network')) %}
-{% do opencontrail.update({
-    'enabled': true,
-    'cni_image': opencontrail.contrail_cni.image,
-}) %}
-{% do pool.network.opencontrail.update(opencontrail) %}
 {%- endif %}
 
 {%- set monitoring = salt['grains.filter_by']({

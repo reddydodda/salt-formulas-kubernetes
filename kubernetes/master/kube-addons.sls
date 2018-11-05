@@ -30,24 +30,6 @@ addon-dir-create:
     - makedirs: True
 {% endif %}
 
-{%- if master.network.get('opencontrail', {}).get('enabled', False) and master.network.opencontrail.get('version', 3.0) < 4.0 %}
-/etc/kubernetes/addons/contrail-network-controller/contrail-network-controller-configmap.yml:
-  file.managed:
-    - source: salt://kubernetes/files/kube-addons/contrail-network-controller/contrail-network-controller-configmap.yml
-    - template: jinja
-    - group: root
-    - dir_mode: 755
-    - makedirs: True
-
-/etc/kubernetes/addons/contrail-network-controller/contrail-network-controller-deploy.yml:
-  file.managed:
-    - source: salt://kubernetes/files/kube-addons/contrail-network-controller/contrail-network-controller-deploy.yml
-    - template: jinja
-    - group: root
-    - dir_mode: 755
-    - makedirs: True
-{% endif %}
-
 {%- if common.addons.get('virtlet', {}).get('enabled') %}
 /etc/kubernetes/addons/virtlet/virtlet-ds.yml:
   file.managed:
