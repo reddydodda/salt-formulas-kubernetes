@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import common with context %}
 {%- from "kubernetes/map.jinja" import pool with context %}
 {%- if pool.enabled %}
 
@@ -83,12 +84,36 @@
 
 {%- if pool.network.calico.get('systemd', true) %}
 
+{%- if common.get('containerd', {}).get('enabled', false) %}
+/etc/systemd/system/calico-node.service:
+  file.managed:
+    - source: salt://kubernetes/files/calico/calico-node.service.ctr
+    - user: root
+    - group: root
+    - template: jinja
+    - require:
+      - service: containerd
+    - defaults:
+      hostname: {{ pool.host.name }}{% if pool.host.get('domain') %}.{{ pool.host.domain }}{%- endif %}
+      address: {{ pool.address }}
+      calico: {{ pool.network.calico }}
+{%- else %}
 /etc/systemd/system/calico-node.service:
   file.managed:
     - source: salt://kubernetes/files/calico/calico-node.service.pool
     - user: root
     - group: root
     - template: jinja
+{%- endif %}
+
+{%- for dirname in ['lib', 'log'] %}
+/var/{{ dirname }}/calico:
+  file.directory:
+      - user: root
+      - group: root
+      - require_in:
+        - service: calico-node
+{%- endfor %}
 
 calico_node:
   service.running:

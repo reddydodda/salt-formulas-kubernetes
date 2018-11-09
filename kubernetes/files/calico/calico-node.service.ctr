@@ -1,0 +1,47 @@
+[Unit]
+Description=calico-node
+After=containerd.service
+Requires=containerd.service
+
+[Service]
+ExecStartPre=-/usr/bin/ctr t delete -f calico-node
+ExecStartPre=-/usr/bin/ctr c rm calico-node
+ExecStartPre=/usr/bin/ctr i pull {{ calico.image }}
+ExecStartPre=/bin/mkdir -p /var/run/calico
+ExecStart=/usr/bin/ctr run --net-host --privileged \
+ --env NODENAME={{ hostname }} \
+ --env IP={{ address }} \
+{%- if calico.network_backend is defined %}
+ --env CALICO_NETWORKING_BACKEND="{{ calico.network_backend }}" \
+{%- endif %}
+ --env AS={{ calico.get('as', '64512') }} \
+ --env NO_DEFAULT_POOLS={{ calico.get('no_default_pools', false ) }} \
+ --env CALICO_STARTUP_LOGLEVEL={{ calico.get('log_level', 'INFO') }} \
+ --env CLUSTER_TYPE='k8s,bgp' \
+ --env CALICO_LIBNETWORK_ENABLED={{ calico.get('libnetwork_enabled', false ) }} \
+ --env ETCD_ENDPOINTS={% for member in calico.etcd.members %}http{% if calico.etcd.get('ssl', {}).get('enabled') %}s{% endif %}://{{ member.host }}:{{ member.port }}{% if not loop.last %},{% endif %}{% endfor %} \
+{%- if calico.etcd.get('ssl', {}).get('enabled') %}
+ --env ETCD_CA_CERT_FILE=/var/lib/etcd/ca.pem \
+ --env ETCD_CERT_FILE=/var/lib/etcd/etcd-client.crt \
+ --env ETCD_KEY_FILE=/var/lib/etcd/etcd-client.key \
+ --mount type=bind,src=/var/lib/etcd/,dst=/var/lib/etcd/,options=rbind:ro \
+{%- endif %}
+{%- if calico.get('prometheus', {}).get('enabled') %}
+ --env FELIX_PROMETHEUSMETRICSENABLED=true \
+ --env FELIX_PROMETHEUSMETRICSPORT={{ calico.prometheus.get('port', 9091) }} \
+{%- endif %}
+ --mount type=bind,src=/var/log/calico,dst=/var/log/calico,options=rbind:rw \
+ --mount type=bind,src=/var/lib/calico,dst=/var/lib/calico,options=rbind:rw \
+ --mount type=bind,src=/lib/modules,dst=/lib/modules,options=rbind:rw \
+ --mount type=bind,src=/var/run/calico,dst=/var/run/calico,options=rbind:rw \
+ {{ calico.image }} \
+ calico-node
+
+Restart=always
+RestartSec=10s
+
+ExecStop=-/usr/bin/ctr t delete -f calico-node
+ExecStop=-/usr/bin/ctr c rm calico-node
+
+[Install]
+WantedBy=multi-user.target
