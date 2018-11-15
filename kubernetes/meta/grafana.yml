@@ -3,13 +3,18 @@
 
 {%- if master.get('enabled', False) %}
 {% set network = master.get('network', {}) %}
+{% set opencontrail_enabled = network.get('opencontrail', {}).get('enabled', False) %}
 {% endif %}
 
 dashboard:
   kubernetes-cluster-prometheus:
     datasource: prometheus
     format: json
+{%- if opencontrail_enabled is defined %}
+    template: kubernetes/files/grafana_dashboards/kubernetes_opencontrail_cluster_prometheus.json
+{%- else %}
     template: kubernetes/files/grafana_dashboards/kubernetes_cluster_prometheus.json
+{%- endif %}
 {%- if network is defined and network.get('calico', {}).get('enabled', False) %}
   calico-prometheus:
     datasource: prometheus
