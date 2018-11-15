@@ -1,0 +1,81 @@
+{%- from "kubernetes/map.jinja" import common -%}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: virtlet-conformance
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: virtlet-conformance
+  namespace: virtlet-conformance
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: virtlet-conformance
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: virtlet-conformance
+subjects:
+- kind: ServiceAccount
+  name: virtlet-conformance
+  namespace: virtlet-conformance
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: virtlet-conformance
+  namespace: virtlet-conformance
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: virtlet-conformance
+  namespace: virtlet-conformance
+spec:
+  hostNetwork: true
+  restartPolicy: Never
+  serviceAccountName: virtlet-conformance
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: In
+            values:
+            - "true"
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  containers:
+  - command:
+    - /bin/bash
+    - -c
+    - set -o pipefail && /virtlet-e2e-tests -include-cloud-init-tests -junitOutput /report/report.xml
+      -image cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+      -sshuser ubuntu -memoryLimit 1024 -alsologtostderr -cluster-url http://127.0.0.1:8080
+      -ginkgo.focus '\[Conformance\]' | tee /report/virtlet_conformance.log
+    name: virtlet-conformance
+    imagePullPolicy: Always
+    securityContext:
+      privileged: true
+    image: {{ common.addons.virtlet.image }}
+    volumeMounts:
+    - mountPath: /report
+      name: output-volume
+      mountPropagation: Bidirectional
+  volumes:
+  - hostPath:
+      path: /tmp/virtlet-conformance
+    name: output-volume

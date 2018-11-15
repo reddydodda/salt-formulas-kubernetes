@@ -1,0 +1,86 @@
+{%- from "kubernetes/map.jinja" import full_version -%}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: conformance
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: conformance
+  namespace: conformance
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: conformance
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: conformance
+subjects:
+- kind: ServiceAccount
+  name: conformance
+  namespace: conformance
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: conformance
+  namespace: conformance
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: conformance
+  namespace: conformance
+spec:
+  hostNetwork: true
+  restartPolicy: Never
+  serviceAccountName: conformance
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: In
+            values:
+            - "true"
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  containers:
+  - command:
+    - /bin/bash
+    - -c
+    - set -o pipefail && /entrypoint.sh | tee /report/conformance.log
+    name: conformance
+    imagePullPolicy: Always
+    securityContext:
+      privileged: true
+    env:
+    - name: API_SERVER
+      value: http://localhost:8080
+# Uncomment to use FOCUS for conformance runs
+#    - name: FOCUS
+#      value: "Conformance"
+#    - name: CONCURRENCY
+#      value: 25
+    image: docker-prod-local.artifactory.mirantis.com/mirantis/kubernetes/k8s-conformance:v{{ full_version }}
+    volumeMounts:
+    - mountPath: /report
+      name: output-volume
+      mountPropagation: Bidirectional
+  volumes:
+  - hostPath:
+      path: /tmp/conformance
+    name: output-volume

@@ -61,6 +61,28 @@ kube-addon-manager_service:
   - onlyif: /bin/false
   {%- endif %}
 
+/srv/kubernetes/conformance.yml:
+  file.managed:
+    - source: salt://kubernetes/files/conformance/conformance.yml
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
+{%- if common.addons.get('virtlet', {}).get('enabled') %}
+
+/srv/kubernetes/virtlet_conformance.yml:
+  file.managed:
+    - source: salt://kubernetes/files/conformance/virtlet_conformance.yml
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
+{%- endif %}
+
 {%- if master.label is defined %}
 
 {%- for name,label in master.label.items() %}
