@@ -154,10 +154,13 @@ kubernetes_basic_auth:
         --client-ca-file={{ master.auth.get('ssl', {}).ca_file|default("/etc/kubernetes/ssl/ca-"+master.ca+".crt") }}
         {%- endif %}
         {%- if master.auth.get('proxy', {}).enabled|default(False) %}
+        --requestheader-allowed-names=system:kube-controller-manager
         --requestheader-username-headers={{ master.auth.proxy.header.user }}
         --requestheader-group-headers={{ master.auth.proxy.header.group }}
         --requestheader-extra-headers-prefix={{ master.auth.proxy.header.extra }}
         --requestheader-client-ca-file={{ master.auth.proxy.ca_file|default("/etc/kubernetes/ssl/ca-"+master.ca+".crt") }}
+        --proxy-client-cert-file={{ master.auth.proxy.client_cert|default("/etc/kubernetes/ssl/kube-aggregator-proxy-client.crt") }}
+        --proxy-client-key-file={{ master.auth.proxy.client_key|default("/etc/kubernetes/ssl/kube-aggregator-proxy-client.key") }}
         {%- endif %}
         --anonymous-auth={{ master.auth.get('anonymous', {}).enabled|default(False) }}
         --etcd-quorum-read=true
