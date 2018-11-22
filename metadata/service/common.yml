@@ -123,6 +123,9 @@ parameters:
           image: mirantis/virtlet:v1.0.3
           criproxy_version: v0.10.0
           criproxy_source: md5=52717b1f70f15558ef4bdb0e4d4948da
+        metrics-server:
+          enabled: False
+          controller_image: k8s.gcr.io/metrics-server-amd64:v0.3.1
       cni:
         plugins:
           source: https://github.com/containernetworking/plugins/releases/download/v0.7.1/cni-plugins-amd64-v0.7.1.tgz
