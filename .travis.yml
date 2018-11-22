@@ -15,33 +15,23 @@ install:
   - bundle install
 
 env:
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=master-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=pool-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=master-contrail
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=master-contrail4-0
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=pool-contrail4-0
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=common-storageclass
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=master-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=pool-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=master-contrail
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=master-contrail4-0
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=pool-contrail4-0
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=master-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=pool-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=master-contrail
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=master-contrail4-0
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=pool-contrail4-0
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=common-storageclass
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=master-cluster
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=pool-cluster
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=master-contrail
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=master-contrail4-0
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=pool-contrail4-0
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2018.3 SUITE=master-cluster
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2018.3 SUITE=pool-cluster
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2018.3 SUITE=master-contrail
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2018.3 SUITE=master-contrail4-0
-#  - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2018.3 SUITE=pool-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19 SUITE=master-cluster
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19 SUITE=pool-cluster
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19 SUITE=master-contrail
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19 SUITE=master-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19 SUITE=pool-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19 SUITE=common-storageclass
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2017.7/salt:2018_11_19 SUITE=master-cluster
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2017.7/salt:2018_11_19 SUITE=pool-cluster
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2017.7/salt:2018_11_19 SUITE=master-contrail
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2017.7/salt:2018_11_19 SUITE=master-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2017.7/salt:2018_11_19 SUITE=pool-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19 SUITE=master-cluster
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19 SUITE=pool-cluster
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19 SUITE=master-contrail
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19 SUITE=master-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19 SUITE=pool-contrail4-0
+  - PLATFORM=docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19 SUITE=common-storageclass
 
 before_script:
   - set -o pipefail
