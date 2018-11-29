@@ -5,8 +5,13 @@
 server="$(awk '/server/ { print $2 }' /etc/kubernetes/kubelet.kubeconfig)"
 
 # certificates
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
 cert="$(base64 --wrap=0 /etc/kubernetes/ssl/kubelet-client.crt)"
 key="$(base64 --wrap=0 /etc/kubernetes/ssl/kubelet-client.key)"
+{%- else %}
+cert="$(base64 --wrap=0 /etc/kubernetes/ssl/kubelet-client-fqdn.crt)"
+key="$(base64 --wrap=0 /etc/kubernetes/ssl/kubelet-client-fqdn.key)"
+{%- endif %}
 ca="$(base64 --wrap=0 /etc/kubernetes/ssl/ca-kubernetes.crt )"
 cluster="{{ common.cluster_name }}"
 

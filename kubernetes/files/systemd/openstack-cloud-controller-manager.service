@@ -1,0 +1,20 @@
+[Unit]
+Description=OpenStack Cloud Controller Manager
+Documentation=https://github.com/kubernetes/cloud-provider-openstack
+Documentation=man:openstack-cloud-controller-manager
+After=network.target
+
+[Service]
+SyslogIdentifier=openstack-cloud-controller-manager
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/default/%p
+User=root
+ExecStart=/usr/bin/openstack-cloud-controller-manager \
+    $KUBE_LOGTOSTDERR \
+    $KUBE_LOG_LEVEL \
+        $DAEMON_ARGS
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

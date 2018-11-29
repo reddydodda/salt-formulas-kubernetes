@@ -497,4 +497,16 @@ core_dns_service_absent:
     - makedirs: True
 {% endif %}
 
+{%- if common.get('cloudprovider', {}).get('enabled') %}
+{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+/etc/kubernetes/addons/openstack-cloud-provider/openstack-cloud-provider.yaml:
+  file.managed:
+    - source: salt://kubernetes/files/kube-addons/openstack-cloud-provider/openstack-cloud-provider.yaml
+    - template: jinja
+    - group: root
+    - dir_mode: 755
+    - makedirs: True
+{% endif %}
+{% endif %}
+
 {% endif %}

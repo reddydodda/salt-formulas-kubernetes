@@ -1,0 +1,41 @@
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openstack-cloud-controller-manager
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+subjects:
+- kind: User
+  name: system:kube-controller-manager
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: InitializerConfiguration
+apiVersion: admissionregistration.k8s.io/v1alpha1
+metadata:
+  name: pvlabel.kubernetes.io
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+initializers:
+  - name: pvlabel.kubernetes.io
+    rules:
+    - apiGroups:
+      - ""
+      apiVersions:
+      - "*"
+      resources:
+      - persistentvolumes
+
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: cinder
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+provisioner: kubernetes.io/cinder

@@ -137,6 +137,6 @@ parameters:
         provider: openstack
         params:
           region: RegionOne
-          domain_name: default
+          domain_id: default
       cluster_domain: ${_param:kubernetes_cluster_domain}
       cluster_name: ${_param:cluster_name}

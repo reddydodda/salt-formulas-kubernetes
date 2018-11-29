@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import common with context -%}
 {%- if pillar.get('fluentd', {}).get('agent', {}).get('enabled', False) %}
 {%- from "kubernetes/map.jinja" import pool, master %}
 {%- if pool.get('enabled', False) %}
@@ -79,8 +80,13 @@ agent:
             tag: 'temp.kubernetes.container.**'
             type: kubernetes_metadata
             kubernetes_url: https://{{ pool.apiserver.host }}:{{ pool.apiserver.secure_port }}
+            {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+            client_cert: /etc/kubernetes/ssl/kubelet-client-fqdn.crt
+            client_key: /etc/kubernetes/ssl/kubelet-client-fqdn.key
+            +{%- else %}
             client_cert: /etc/kubernetes/ssl/kubelet-client.crt
             client_key: /etc/kubernetes/ssl/kubelet-client.key
+            +{%- endif %}
             ca_file: /etc/kubernetes/ssl/ca-kubernetes.crt
             verify_ssl: True
           enrich_container:

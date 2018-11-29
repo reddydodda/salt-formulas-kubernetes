@@ -1,4 +1,5 @@
 {%- from "kubernetes/map.jinja" import master with context %}
+{%- from "kubernetes/map.jinja" import common with context -%}
 {%- from "kubernetes/map.jinja" import pool with context %}
 
 {%- if pool.get('enabled', False) %}
@@ -99,8 +100,13 @@ remote_plugin:
        # alternative names DNS entries.
        # https://github.com/shazow/urllib3/issues/258
        verify: false
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+       client_cert: /etc/kubernetes/ssl/kubelet-client-fqdn.crt
+       client_key: /etc/kubernetes/ssl/kubelet-client-fqdn.key
+{%- else %}
        client_cert: /etc/kubernetes/ssl/kubelet-client.crt
        client_key: /etc/kubernetes/ssl/kubelet-client.key
+{%- endif %}
        url: https://{{ pool.apiserver.host }}:{{ pool.apiserver.secure_port }}/healthz
        metric_name: k8s_service_health_vip
   collectd_k8s_get:
@@ -109,7 +115,12 @@ remote_plugin:
    polling_interval: 60
    interval: 30
    verify: false
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+   client_cert: /etc/kubernetes/ssl/kubelet-client-fqdn.crt
+   client_key: /etc/kubernetes/ssl/kubelet-client-fqdn.key
+{%- else %}
    client_cert: /etc/kubernetes/ssl/kubelet-client.crt
    client_key: /etc/kubernetes/ssl/kubelet-client.key
+{%- endif %}
    endpoint: https://{{ pool.apiserver.host }}:{{ pool.apiserver.secure_port }}
 {%- endif %}

@@ -25,7 +25,11 @@ DAEMON_ARGS="\
 --allow-privileged={{ pool.kubelet.allow_privileged }} \
 --cluster_dns={{ common.addons.dns.server }} \
 --cluster_domain={{ common.addons.dns.domain|replace('_', '-') }} \
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+--hostname-override={{ pool.host.name }}.{{ common.cluster_domain }} \
+{%- else %}
 --hostname-override={{ pool.host.name }} \
+{%- endif %}
 --v={{ pool.get('verbosity', 2) }} \
 {%- if common.hyperkube.pause_image is defined %}
 --pod-infra-container-image={{ common.hyperkube.pause_image }} \
@@ -51,9 +55,9 @@ DAEMON_ARGS="\
 {%- endif %}
 --file-check-frequency={{ pool.kubelet.frequency }} \
 {%- if common.get('cloudprovider', {}).get('enabled') %}
---cloud-provider={{ common.cloudprovider.provider }} \
+--cloud-provider=external \
 {%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
---cloud-config=/etc/kubernetes/cloud-config.conf \
+--cloud-config=/etc/kubernetes/cloud-config \
 {%- endif %}
 {%- endif %}
 {%- if common.addons.get('virtlet', {}).get('enabled') %}

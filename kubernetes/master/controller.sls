@@ -88,6 +88,42 @@ kubernetes_basic_auth:
 
 {%- else %}
 
+
+{%- if common.get('cloudprovider', {}).get('enabled') %}
+{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+/usr/bin/openstack-cloud-controller-manager:
+  file.managed:
+    - source: {{ common.cloudprovider.params.binary }}
+    - mode: 751
+    - makedirs: true
+    - user: root
+    - group: root
+    - source_hash: {{ common.cloudprovider.params.binary_hash }}
+
+/etc/default/openstack-cloud-controller-manager:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 644
+    - contents: >-
+        DAEMON_ARGS="
+        --cloud-provider=openstack
+        --cloud-config /etc/kubernetes/cloud-config
+        --cluster-name=kubernetes
+        --kubeconfig /etc/kubernetes/controller-manager.kubeconfig
+        --leader-elect=true
+        --v={{ master.get('verbosity', 2) }}"
+
+/etc/systemd/system/openstack-cloud-controller-manager.service:
+  file.managed:
+  - source: salt://kubernetes/files/systemd/openstack-cloud-controller-manager.service
+  - template: jinja
+  - user: root
+  - group: root
+  - mode: 644
+{%- endif %}
+{%- endif %}
+
 /etc/default/kube-apiserver:
   file.managed:
     - user: root
@@ -97,7 +133,15 @@ kubernetes_basic_auth:
         # Using hyperkube version v{{ full_version }}
 
         DAEMON_ARGS="
-        --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass
+        {%- if common.get('cloudprovider', {}).get('enabled') %}
+        {%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+        --runtime-config=admissionregistration.k8s.io/v1alpha1
+        --enable-admission-plugins=Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass
+        --disable-admission-plugins=PersistentVolumeLabel
+        {%- endif %}
+        {%- else %}
+        --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,DefaultStorageClass
+        {%- endif %}
         --allow-privileged=True
         {%- if master.auth.get('mode') %}
         --authorization-mode={{ master.auth.mode }}
@@ -139,12 +183,6 @@ kubernetes_basic_auth:
 {%- endif %}
 {%- if master.apiserver.node_port_range is defined %}
         --service-node-port-range {{ master.apiserver.node_port_range }}
-{%- endif %}
-{%- if common.get('cloudprovider', {}).get('enabled') %}
-        --cloud-provider={{ common.cloudprovider.provider }}
-{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
-        --cloud-config=/etc/kubernetes/cloud-config.conf
-{%- endif %}
 {%- endif %}
 {%- if common.addons.get('virtlet', {}).get('enabled') %}
 {%- if salt['pkg.version_cmp'](version,'1.8') >= 0 %}
@@ -191,12 +229,6 @@ kubernetes_basic_auth:
         --root-ca-file=/etc/kubernetes/ssl/ca-{{ master.ca }}.crt
         --service-account-private-key-file=/etc/kubernetes/ssl/kubernetes-server.key
         --use-service-account-credentials
-{%- if common.get('cloudprovider', {}).get('enabled') %}
-        --cloud-provider={{ common.cloudprovider.provider }}
-{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
-        --cloud-config=/etc/kubernetes/cloud-config.conf
-{%- endif %}
-{%- endif %}
         --v={{ master.get('verbosity', 2) }}
 {%- if master.network.get('flannel', {}).get('enabled', False) %}
         --allocate-node-cidrs=true
@@ -272,6 +304,19 @@ master_services:
     - file: /etc/default/kube-scheduler
     - file: /etc/default/kube-controller-manager
     - file: /usr/bin/hyperkube
+
+{%- if common.get('cloudprovider', {}).get('enabled') %}
+{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+openstack_cloud_controller_service:
+  service.running:
+  - name: openstack-cloud-controller-manager
+  - enable: True
+  - watch:
+    - file: /etc/kubernetes/cloud-config
+    - file: /etc/default/openstack-cloud-controller-manager
+    - file: /etc/kubernetes/controller-manager.kubeconfig
+{%- endif %}
+{%- endif %}
 
 {%- endif %}
 

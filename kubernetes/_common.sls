@@ -192,7 +192,7 @@ criproxy_service:
   file.absent
 
 {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
-/etc/kubernetes/cloud-config.conf:
+/etc/kubernetes/cloud-config:
   file.managed:
   - source: salt://kubernetes/files/cloudprovider/cloud-config-openstack.conf
   - template: jinja
@@ -259,6 +259,11 @@ kubelet_service:
     - file: /usr/bin/hyperkube
     - file: /etc/kubernetes/kubelet.kubeconfig
     - file: manifest_dir_create
+    {%- if common.get('cloudprovider', {}).get('enabled') %}
+    {%- if common.get('cloudprovider', {}).get('provider') == 'openstack' and not pillar.get('kubernetes', {}).get('master', false) %}
+    - file: /etc/kubernetes/cloud-config
+    {%- endif %}
+    {%- endif %}
   {%- if grains.get('noservices') %}
   - onlyif: /bin/false
   {%- endif %}

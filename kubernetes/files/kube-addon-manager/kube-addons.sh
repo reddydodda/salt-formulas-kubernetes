@@ -53,6 +53,7 @@ KUBECTL_PRUNE_WHITELIST=(
   extensions/v1beta1/ReplicaSet
   apps/v1beta1/StatefulSet
   apps/v1beta1/Deployment
+  storage.k8s.io/v1/StorageClass
 )
 
 ADDON_CHECK_INTERVAL_SEC=${TEST_ADDON_CHECK_INTERVAL_SEC:-60}

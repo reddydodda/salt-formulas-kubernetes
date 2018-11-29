@@ -11,7 +11,11 @@ DAEMON_ARGS="\
 --cluster_dns={{ common.addons.dns.server }} \
 --cluster_domain={{ common.addons.dns.domain|replace('_', '-') }} \
 --cni-bin-dir={{ master.apiserver.get('cni_bin_dir', '/opt/cni/bin') }} \
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+--hostname-override={{ master.host.name }}.{{ common.cluster_domain }} \
+{%- else %}
 --hostname-override={{ master.host.name }} \
+{%- endif %}
 --v={{ master.get('verbosity', 2) }} \
 --node-labels=node-role.kubernetes.io/master=true \
 {%- if common.hyperkube.pause_image is defined %}
@@ -21,10 +25,7 @@ DAEMON_ARGS="\
 --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
 {%- endif %}
 {%- if common.get('cloudprovider', {}).get('enabled') %}
---cloud-provider={{ common.cloudprovider.provider }} \
-{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
---cloud-config=/etc/kubernetes/cloud-config.conf \
-{%- endif %}
+--cloud-provider=external \
 {%- endif %}
 {%- for key, value in master.get('kubelet', {}).get('daemon_opts', {}).items() %}
 --{{ key }}={{ value }} \
