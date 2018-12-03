@@ -24,7 +24,7 @@ data:
           pods insecure
           upstream
 {%- if common.addons.externaldns.enabled and common.addons.externaldns.domain == common.addons.coredns.domain %}
-          fallthrough {{ common.addons.coredns.domain }} in-addr.arpa ip6.arpa
+          fallthrough {{ common.addons.coredns.domain|replace('_', '-') }} in-addr.arpa ip6.arpa
 {%- else %}
           fallthrough in-addr.arpa ip6.arpa
 {%- endif %}
@@ -37,7 +37,7 @@ data:
         }
 {%- endif %}
 {%- if common.addons.externaldns.enabled %}
-        etcd {{ common.addons.externaldns.domain }} {
+        etcd {{ common.addons.externaldns.domain|replace('_', '-') }} {
           stubzones
           path /skydns
           endpoint http://{{ common.addons.coredns.etcd.client_address }}:2379
