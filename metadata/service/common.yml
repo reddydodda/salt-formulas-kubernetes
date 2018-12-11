@@ -6,6 +6,9 @@ parameters:
     kubernetes_cluster_domain: ${_param:cluster_domain}
   kubernetes:
     common:
+      addonmanager:
+        container: true
+        image: k8s.gcr.io/kube-addon-manager:v8.9
       addons:
         alertmanager:
           enabled: False
