@@ -1,5 +1,5 @@
 Source: salt-formula-kubernetes
-Maintainer: PKG OpenStack <openstack-devel@lists.alioth.debian.org>
+Maintainer: Mirantis Dev <dev@mirantis.com>
 Uploaders: Filip Pytloun <filip@pytloun.cz>,
            Ondřej Nový <onovy@debian.org>,
 Section: admin
@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 9),
 Build-Depends-Indep: python-all,
                      python-yaml,
 Standards-Version: 3.9.6
-Homepage: https://wiki.openstack.org/wiki/OpenStackSalt
+Homepage: https://www.mirantis.com
 Vcs-Browser: https://anonscm.debian.org/cgit/openstack/salt-formula-kubernetes.git/
 Vcs-Git: https://anonscm.debian.org/git/openstack/salt-formula-kubernetes.git
 

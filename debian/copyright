@@ -3,15 +3,7 @@ Upstream-Name: salt-formula-kubernetes
 Source: https://github.com/openstack/salt-formula-kubernetes
 
 Files: *
-Copyright: (c) 2016 tcp cloud a.s.
-           (c) 2016 OpenStack Foundation
-License: Apache-2.0
-
-Files: debian/*
-Copyright: (c) 2016, Filip Pytloun <filip@pytloun.cz>
-           (c) 2016, Ondřej Nový <onovy@debian.org>
-License: Apache-2.0
-
+Copyright: 2014-2019 Mirantis Inc. et al
 License: Apache-2.0
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
