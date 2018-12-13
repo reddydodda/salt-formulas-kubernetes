@@ -1,4 +1,5 @@
 {%- from "kubernetes/map.jinja" import common with context -%}
+{%- from "kubernetes/map.jinja" import master with context -%}
 ---
 
 apiVersion: apps/v1beta2
@@ -46,6 +47,10 @@ spec:
         env:
         - name: RABBITMQ_ERLANG_COOKIE
           value: {{ common.addons.get('contrail',{}).get('rabbitmq_erlang_cookie',"YTQMGYEHFATZPDKPOCXX") }}
+        - name: RABBITMQ_DEFAULT_USER
+          value: {{ master.network.get('opencontrail',{}).get('message_queue',{}).get('user',"guest") }}
+        - name: RABBITMQ_DEFAULT_PASS
+          value: {{ master.network.get('opencontrail',{}).get('message_queue',{}).get('password',"guest") }}
 
       - name: opencontrail-controller
         image: {{ common.addons.opencontrail.controller.image }}
