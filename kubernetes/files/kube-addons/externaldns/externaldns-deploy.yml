@@ -34,7 +34,7 @@ spec:
         args:
         - --source=service
         - --source=ingress
-        - --domain-filter={{ common.addons.externaldns.domain }} # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --domain-filter={{ common.addons.externaldns.domain|replace('_', '-') }} # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
         - --provider={{ common.addons.externaldns.provider }}
         {%- if common.addons.externaldns.provider == "google" %}
         - --google-project={{ common.addons.externaldns.google_options.project }}
