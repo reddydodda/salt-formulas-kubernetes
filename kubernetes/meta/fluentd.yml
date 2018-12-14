@@ -83,10 +83,10 @@ agent:
             {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
             client_cert: /etc/kubernetes/ssl/kubelet-client-fqdn.crt
             client_key: /etc/kubernetes/ssl/kubelet-client-fqdn.key
-            +{%- else %}
+            {%- else %}
             client_cert: /etc/kubernetes/ssl/kubelet-client.crt
             client_key: /etc/kubernetes/ssl/kubelet-client.key
-            +{%- endif %}
+            {%- endif %}
             ca_file: /etc/kubernetes/ssl/ca-kubernetes.crt
             verify_ssl: True
           enrich_container:
