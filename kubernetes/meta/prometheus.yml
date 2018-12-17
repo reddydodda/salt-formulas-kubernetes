@@ -9,13 +9,19 @@
   {%- set network = master.get('network', {}) %}
 {%- endif %}
 
-
 {%- set apiServerPoint = {} %}
 {%- if pool.get('enabled', False) %}
   {%- set apiServerPoint = pool.get('apiserver', {}).get('host') %}
+  {%- if network.get('calico', {}).get('enabled', False) and network.calico.get('prometheus', {}).get('enabled', False) %}
+    {%- set calico_address = network.calico.prometheus.get('address', pool.address) %}
+  {%- endif %}
 {%- elif master.get('enabled', False) %}
   {%- set apiServerPoint = master.get('apiserver', {}).get('address') %}
+  {%- if network.get('calico', {}).get('enabled', False) and network.calico.get('prometheus', {}).get('enabled', False) %}
+    {%- set calico_address = network.calico.prometheus.get('address', master.address) %}
+  {%- endif %}
 {%- endif %}
+
 
 server:
   target:
@@ -24,16 +30,17 @@ server:
       api_ip: {{ apiServerPoint }}
       cert_name: prometheus-server.crt
       key_name: prometheus-server.key
-{%- if network.get('calico', {}).get('enabled', False) and network.calico.get('prometheus', {}).get('enabled', False) %}
+{%- if calico_address is defined %}
     static:
       calico:
         endpoint:
-  {%- if pool.get('enabled', False) %}
-          - address: {{ network.calico.prometheus.get('address', pool.address) }}
-  {%- else %}
-          - address: {{ network.calico.prometheus.get('address', master.address) }}
-  {%- endif %}
+          - address: {{ calico_address }}
             port: {{ network.calico.prometheus.get('port', 9091) }}
+        relabel_configs:
+          - regex: {{ calico_address }}:{{ network.calico.prometheus.get('port', 9091) }}
+            replacement: {{ grains['host'] }}
+            source_labels: "__address__"
+            target_label: "host"
 {%- endif %}
   recording:
     cluster_namespace_controller_pod_container:spec_memory_limit_bytes:
