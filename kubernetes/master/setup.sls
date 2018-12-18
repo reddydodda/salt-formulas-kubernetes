@@ -17,6 +17,44 @@ generate_admin_kube_config:
     - watch:
       - file: /etc/kubernetes/kubeconfig.sh
 
+/etc/kubernetes/addons/namespace.yaml:
+  file.managed:
+    - source: salt://kubernetes/files/kube-addon-manager/namespace.yaml
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
+{%- if common.get('addonmanager', {}).get('container', false) %}
+
+/etc/kubernetes/manifests/kube-addon-manager.yml:
+  file.managed:
+    - source: salt://kubernetes/files/manifest/kube-addon-manager.yml
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+
+/etc/default/kube-addon-manager:
+  file.absent
+
+/usr/bin/kube-addons.sh:
+  file.absent
+
+kube-addon-manager_service_dead:
+  service.dead:
+  - name: kube-addon-manager
+  - enable: False
+
+/etc/systemd/system/kube-addon-manager.service:
+  file.absent
+
+{%- else %}
+
+/etc/kubernetes/manifests/kube-addon-manager.yml:
+  file.absent
+
 /etc/default/kube-addon-manager:
   file.managed:
     - source: salt://kubernetes/files/kube-addon-manager/kube-addons.config
@@ -41,14 +79,6 @@ generate_admin_kube_config:
     - mode: 644
     - makedirs: True
 
-/etc/kubernetes/addons/namespace.yaml:
-  file.managed:
-    - source: salt://kubernetes/files/kube-addon-manager/namespace.yaml
-    - user: root
-    - group: root
-    - mode: 644
-    - makedirs: True
-
 kube-addon-manager_service:
   service.running:
   - name: kube-addon-manager
@@ -60,6 +90,8 @@ kube-addon-manager_service:
   {%- if grains.get('noservices') %}
   - onlyif: /bin/false
   {%- endif %}
+
+{%- endif %}
 
 /srv/kubernetes/conformance.yml:
   file.managed:

@@ -1,0 +1,46 @@
+{%- from "kubernetes/map.jinja" import common with context %}
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-addon-manager
+  namespace: kube-system
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+    seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+  labels:
+    component: kube-addon-manager
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-addon-manager
+    image: {{ common.get('addonmanager', {}).get('image', 'k8s.gcr.io/kube-addon-manager:v8.9') }}
+    command:
+    - /bin/bash
+    - -c
+    - exec /opt/kube-addons.sh 1>>/var/log/kube-addon-manager.log 2>&1
+    resources:
+      requests:
+        cpu: 5m
+        memory: 50Mi
+    volumeMounts:
+    - mountPath: /etc/kubernetes/
+      name: addons
+      readOnly: true
+    - mountPath: /var/log
+      name: varlog
+      readOnly: false
+    env:
+    - name: TEST_ADDON_CHECK_INTERVAL_SEC
+      value: "30"
+    - name: ADDON_MANAGER_LEADER_ELECTION
+      value: "true"
+    - name: KUBECTL_EXTRA_PRUNE_WHITELIST
+      value: "storage.k8s.io/v1/StorageClass"
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/
+    name: addons
+  - hostPath:
+      path: /var/log
+    name: varlog
