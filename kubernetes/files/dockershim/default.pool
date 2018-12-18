@@ -31,11 +31,9 @@ DAEMON_ARGS="\
 --network-plugin=cni \
 --cni-bin-dir={{ pool.apiserver.get('cni_bin_dir', '/opt/cni/bin') }} \
 --file-check-frequency={{ pool.kubelet.frequency }} \
-{%- if common.get('cloudprovider', {}).get('enabled') %}
---cloud-provider=external \
-{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+--cloud-provider=openstack \
 --cloud-config=/etc/kubernetes/cloud-config \
-{%- endif %}
 {%- endif %}
 --enable-controller-attach-detach={{ pool.get('enable-controller-attach-detach', 'false') }} \
 {%- for key, value in pool.get('kubelet', {}).get('daemon_opts', {}).items() %}
