@@ -16,6 +16,7 @@ agent:
       deb: ['td-agent-additional-plugins']
   config:
     label:
+      {%- if pillar.docker is defined %}
       docker:
         filter:
           add_drop_tag:
@@ -25,6 +26,7 @@ agent:
             record:
               - name: drop_event
                 value: ${ record.fetch('attrs', {}).fetch('io.kubernetes.pod.name', '') }
+      {%- endif %}
       kubernetes:
         input:
           container:
