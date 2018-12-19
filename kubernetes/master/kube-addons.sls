@@ -375,6 +375,29 @@ core_dns_service_absent:
     - makedirs: True
 {% endif %}
 
+{%- if common.addons.get('metrics-server', {}).get('enabled', False) %}
+
+{%- set metrics_server_resources = ['aggregated-metrics-reader.yaml','auth-delegator.yaml','auth-reader.yaml','metrics-apiservice.yaml','metrics-server-deployment.yaml','metrics-server-service.yaml','resource-reader.yaml'] %}
+
+{%- for resource in metrics_server_resources %}
+
+/etc/kubernetes/addons/metrics-server/{{ resource }}:
+  file.managed:
+    - source: salt://kubernetes/files/kube-addons/metrics-server/{{ resource }}
+    - template: jinja
+    - group: root
+    - dir_mode: 755
+    - makedirs: True
+
+{%- endfor %}
+
+{%- else %}
+
+/etc/kubernetes/addons/metrics-server:
+  file.absent
+
+{% endif %}
+
 {% endif %}
 
 {%- if common.addons.get('fluentd', {}).get('enabled') %}

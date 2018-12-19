@@ -1,0 +1,51 @@
+{%- from "kubernetes/map.jinja" import common with context -%}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  labels:
+    k8s-app: metrics-server
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  selector:
+    matchLabels:
+      k8s-app: metrics-server
+  template:
+    metadata:
+      name: metrics-server
+      labels:
+        k8s-app: metrics-server
+    spec:
+      serviceAccountName: metrics-server
+      volumes:
+      # mount in tmp so we can safely use from-scratch images and/or read-only containers
+      - name: tmp-dir
+        emptyDir: {}
+      - name: hosts-file
+        hostPath:
+          path: /etc/hosts
+          type: File
+      containers:
+      - name: metrics-server
+        command:
+        - /metrics-server
+        # TODO: remove it when cert rotating is enabled in kubelet
+        - --kubelet-insecure-tls
+        image: {{ common.addons.get('metrics-server', {}).get('controller_image', 'k8s.gcr.io/metrics-server-amd64:v0.3.1') }}
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
+        - name: hosts-file
+          mountPath: /etc/hosts
+
