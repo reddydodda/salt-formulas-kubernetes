@@ -21,7 +21,9 @@
     {%- set calico_address = network.calico.prometheus.get('address', master.address) %}
   {%- endif %}
 {%- endif %}
-
+{%- if master.get('enabled', False) %}
+  {%- set api_server_endpoint = master.get('apiserver', {}).get('address') + ':' + master.get('apiserver', {}).get('secure_port')|string %}
+{%- endif %}
 
 server:
   target:
@@ -30,6 +32,9 @@ server:
       api_ip: {{ apiServerPoint }}
       cert_name: prometheus-server.crt
       key_name: prometheus-server.key
+      {%- if api_server_endpoint is defined %}
+      api_server_endpoint: {{ api_server_endpoint }}
+      {%- endif %}
 {%- if calico_address is defined %}
     static:
       calico:
