@@ -104,9 +104,9 @@ kube-addon-manager_service:
 
 {%- if common.addons.get('virtlet', {}).get('enabled') %}
 
-/srv/kubernetes/virtlet_conformance.yml:
+/srv/kubernetes/virtlet-conformance.yml:
   file.managed:
-    - source: salt://kubernetes/files/conformance/virtlet_conformance.yml
+    - source: salt://kubernetes/files/conformance/virtlet-conformance.yml
     - template: jinja
     - user: root
     - group: root
