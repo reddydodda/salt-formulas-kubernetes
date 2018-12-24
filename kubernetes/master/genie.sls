@@ -1,8 +1,6 @@
 {%- from "kubernetes/map.jinja" import master with context %}
 {%- if master.enabled %}
 
-{%- if not pillar.kubernetes.pool is defined %}
-
 /etc/cni/net.d/00-genie.conf:
   file.managed:
     - source: salt://kubernetes/files/genie/genie.conf
@@ -28,7 +26,5 @@
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}
-
-{%- endif %}
 
 {%- endif %}

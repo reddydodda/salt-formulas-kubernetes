@@ -1,7 +1,6 @@
 {%- from "kubernetes/map.jinja" import master with context %}
 {%- if master.enabled %}
 
-{%- if not pillar.kubernetes.pool is defined %}
 /etc/cni/net.d/13-sriov.conf:
   file.managed:
     - source: salt://kubernetes/files/sriov/sriov.conf
@@ -28,5 +27,4 @@
     - onlyif: /bin/false
     {%- endif %}
 
-{%- endif %}
 {%- endif %}

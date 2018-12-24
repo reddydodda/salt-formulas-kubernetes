@@ -9,14 +9,10 @@ include:
 - kubernetes.master.opencontrail
 {%- endif %}
 {%- if master.network.get('calico', {}).get('enabled', False) %}
-{%- if not pillar.kubernetes.pool is defined %}
 - kubernetes.master.calico
 {%- endif %}
-{%- endif %}
 {%- if master.network.get('genie', {}).get('enabled', False) %}
-{%- if not pillar.kubernetes.pool is defined %}
 - kubernetes.master.genie
-{%- endif %}
 {%- endif %}
 {%- if master.network.get('sriov', {}).get('enabled', False) %}
 - kubernetes.master.sriov
