@@ -55,11 +55,9 @@ DAEMON_ARGS="\
 --cni-bin-dir={{ pool.apiserver.get('cni_bin_dir', '/opt/cni/bin') }} \
 {%- endif %}
 --file-check-frequency={{ pool.kubelet.frequency }} \
-{%- if common.get('cloudprovider', {}).get('enabled') %}
---cloud-provider=external \
-{%- if common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+--cloud-provider=openstack \
 --cloud-config=/etc/kubernetes/cloud-config \
-{%- endif %}
 {%- endif %}
 {%- if common.addons.get('virtlet', {}).get('enabled') %}
 --container-runtime={{ pool.get('container-runtime', 'remote') }} \
