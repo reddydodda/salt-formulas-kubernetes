@@ -1,8 +1,6 @@
 {%- from "kubernetes/map.jinja" import pool with context %}
 {%- if pool.enabled %}
 
-{%- if not pillar.kubernetes.master is defined %}
-
 /etc/cni/net.d/12-flannel.conflist:
   file.managed:
     - source: salt://kubernetes/files/flannel/flannel.conflist
@@ -12,7 +10,5 @@
     - makedirs: true
     - dir_mode: 755
     - template: jinja
-
-{%- endif %}
 
 {%- endif %}
