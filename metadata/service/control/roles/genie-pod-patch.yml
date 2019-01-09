@@ -12,6 +12,12 @@ parameters:
                 - "pods"
               verbs:
                 - "patch"
+            - apiGroups:
+                - ""
+              resources:
+                - "namespaces"
+              verbs:
+                - "get"
           binding:
             genie-pod-patch:
               subject:
