@@ -48,6 +48,9 @@ spec:
           mountPath: /var/log/contrail
         - name: journal-kube-manager
           mountPath: /var/log/journal
+        - name: etc-hostname
+          mountPath: /etc/hostname
+          readOnly: true
 
       volumes:
       - name: etc-kubernetes
@@ -65,6 +68,10 @@ spec:
         hostPath:
           path:  /var/log/journal/contrail-kube-manager
           type: DirectoryOrCreate
+      - name: etc-hostname
+        hostPath:
+          path: /etc/hostname
+          type: File
 
       nodeSelector:
         "node-role.kubernetes.io/master": "true"

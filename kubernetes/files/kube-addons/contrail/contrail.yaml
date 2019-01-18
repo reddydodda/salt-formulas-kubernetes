@@ -44,6 +44,10 @@ spec:
                 fi;
                 rabbitmqctl set_policy ha-all "." '{"ha-mode":"exactly","ha-params":3,"ha-sync-mode":"automatic"}'
 {% endraw %}
+        volumeMounts:
+        - name: etc-hostname
+          mountPath: /etc/hostname
+          readOnly: true
         env:
         - name: RABBITMQ_ERLANG_COOKIE
           value: {{ common.addons.get('contrail',{}).get('rabbitmq_erlang_cookie',"YTQMGYEHFATZPDKPOCXX") }}
@@ -100,7 +104,9 @@ spec:
           mountPath: /var/log/contrail
         - name: journal-controller
           mountPath: /var/log/journal
-
+        - name: etc-hostname
+          mountPath: /etc/hostname
+          readOnly: true
 
       - name: opencontrail-analyticsdb
         image: {{ common.addons.opencontrail.analyticsdb.image }}
@@ -142,6 +148,9 @@ spec:
           mountPath: /var/log/contrail
         - name: journal-analyticsdb
           mountPath: /var/log/journal
+        - name: etc-hostname
+          mountPath: /etc/hostname
+          readOnly: true
 
       - name: opencontrail-analytics
         image: {{ common.addons.opencontrail.analytics.image }}
@@ -154,6 +163,10 @@ spec:
           mountPath: /var/log/contrail
         - name: journal-analytics
           mountPath: /var/log/journal
+        - name: etc-hostname
+          mountPath: /etc/hostname
+          readOnly: true
+
         securityContext:
           privileged: true
         env:
@@ -172,6 +185,10 @@ spec:
         hostPath:
           path: /var/log/contrail
           type: DirectoryOrCreate
+      - name: etc-hostname
+        hostPath:
+          path: /etc/hostname
+          type: File
 
       # controller
       - name: var-lib-configdb
