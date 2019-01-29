@@ -375,6 +375,8 @@ core_dns_service_absent:
     - makedirs: True
 {% endif %}
 
+{% endif %}
+
 {%- if common.addons.get('metrics-server', {}).get('enabled', False) %}
 
 {%- set metrics_server_resources = ['aggregated-metrics-reader.yaml','auth-delegator.yaml','auth-reader.yaml','metrics-apiservice.yaml','metrics-server-deployment.yaml','metrics-server-service.yaml','resource-reader.yaml'] %}
@@ -395,8 +397,6 @@ core_dns_service_absent:
 
 /etc/kubernetes/addons/metrics-server:
   file.absent
-
-{% endif %}
 
 {% endif %}
 
