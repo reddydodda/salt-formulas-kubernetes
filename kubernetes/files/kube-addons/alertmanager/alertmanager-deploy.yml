@@ -19,10 +19,10 @@ spec:
       labels:
         k8s-app: alertmanager
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
       serviceAccountName: alertmanager
+      priorityClassName: system-cluster-critical
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

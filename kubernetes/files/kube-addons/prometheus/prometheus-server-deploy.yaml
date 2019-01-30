@@ -22,10 +22,10 @@ spec:
         k8s-app: prometheus-server
         version: v1
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
       serviceAccountName: prometheus-server
+      priorityClassName: system-cluster-critical
       tolerations:
         - key: "node-role.kubernetes.io/master"
           effect: "NoSchedule"

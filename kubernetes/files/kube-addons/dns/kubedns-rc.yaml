@@ -42,7 +42,6 @@ spec:
       labels:
         k8s-app: kube-dns
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
 {%- if common.addons.dns.cni is defined %}
         cni: {{ common.addons.dns.cni }}
@@ -51,6 +50,7 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+      priorityClassName: system-cluster-critical
       containers:
       - name: kubedns
         image: {{ common.addons.dns.get('kubedns_image', 'gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.5') }}

@@ -1,0 +1,6 @@
+parameters:
+  kubernetes:
+    control:
+      priorityclass:
+        critical-priority:
+          priority_value: 1000000000

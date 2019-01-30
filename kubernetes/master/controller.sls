@@ -163,7 +163,6 @@ kubernetes_basic_auth:
         --proxy-client-key-file={{ master.auth.proxy.client_key|default("/etc/kubernetes/ssl/kube-aggregator-proxy-client.key") }}
         {%- endif %}
         --anonymous-auth={{ master.auth.get('anonymous', {}).enabled|default(False) }}
-        --etcd-quorum-read=true
         --insecure-bind-address={{ master.apiserver.insecure_address }}
         --insecure-port={{ master.apiserver.insecure_port }}
         --secure-port={{ master.apiserver.secure_port }}

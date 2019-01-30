@@ -22,7 +22,6 @@ spec:
         k8s-app: fluentd-aggregator
         version: v1
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
       serviceAccountName: fluentd
@@ -30,6 +29,7 @@ spec:
         - key: "node-role.kubernetes.io/master"
           effect: "NoSchedule"
           operator: "Exists"
+      priorityClassName: system-cluster-critical
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

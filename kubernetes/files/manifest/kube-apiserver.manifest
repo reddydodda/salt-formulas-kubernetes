@@ -42,7 +42,6 @@ spec:
       {%- if master.auth.get('token', {}).enabled|default(True) %}
       --token-auth-file={{ master.auth.token.file|default("/srv/kubernetes/known_tokens.csv") }}
       {%- endif %}
-      --etcd-quorum-read=true
       --v={{ master.get('verbosity', 2) }}
       --allow-privileged=True
       {%- if common.addons.get('virtlet', {}).get('enabled') %}

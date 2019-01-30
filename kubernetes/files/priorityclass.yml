@@ -1,0 +1,11 @@
+kind: PriorityClass
+apiVersion: scheduling.k8s.io/v1beta1
+metadata:
+  name: {{ priorityclass_name }}
+value: {{ priorityclass_value }}
+globalDefault: {{ is_default_priorityclass  }}
+description: "{{ priorityclass_description  }}"
+
+{#-
+vim: syntax=jinja
+-#}
