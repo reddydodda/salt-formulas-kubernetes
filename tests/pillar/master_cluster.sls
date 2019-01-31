@@ -23,6 +23,9 @@ kubernetes:
       helm:
         enabled: true
         tiller_image: gcr.io/kubernetes-helm/tiller:v2.2.3
+        client:
+          source: https://storage.googleapis.com/kubernetes-helm/helm-v2.12.3-linux-amd64.tar.gz
+          hash: sha256=3425a1b37954dabdf2ba37d5d8a0bd24a225bb8454a06f12b115c55907809107
       netchecker:
         enabled: true
         namespace: netchecker
