@@ -56,7 +56,7 @@ DAEMON_ARGS="\
 {%- endif %}
 --file-check-frequency={{ pool.kubelet.frequency }} \
 {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
---cloud-provider=openstack \
+--cloud-provider=external \
 --cloud-config=/etc/kubernetes/cloud-config \
 {%- endif %}
 {%- if common.addons.get('virtlet', {}).get('enabled') %}

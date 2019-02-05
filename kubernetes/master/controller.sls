@@ -231,6 +231,11 @@ kubernetes_basic_auth:
         --root-ca-file=/etc/kubernetes/ssl/ca-{{ master.ca }}.crt
         --service-account-private-key-file=/etc/kubernetes/ssl/kubernetes-server.key
         --use-service-account-credentials
+{%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+        --external-cloud-volume-plugin=openstack
+        --cloud-config /etc/kubernetes/cloud-config.intree
+        --cloud-provider external
+{%- endif %}
         --v={{ master.get('verbosity', 2) }}
 {%- if master.network.get('flannel', {}).get('enabled', False) %}
         --allocate-node-cidrs=true
@@ -317,6 +322,13 @@ openstack_cloud_controller_service:
     - file: /etc/kubernetes/cloud-config
     - file: /etc/default/openstack-cloud-controller-manager
     - file: /etc/kubernetes/controller-manager.kubeconfig
+    - file: /usr/bin/openstack-cloud-controller-manager
+
+kube_controller_mnanager_service:
+  service.running:
+  - name: kube-controller-manager
+  - watch:
+    - file: /etc/kubernetes/cloud-config.intree
 {%- endif %}
 {%- endif %}
 
