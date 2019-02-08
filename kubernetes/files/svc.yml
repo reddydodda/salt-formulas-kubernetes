@@ -2,10 +2,17 @@
 apiVersion: v1
 kind: Service
 metadata:
+  {%- if service.role is defined %}
   labels:
     name: {{ service.service }}-{{ service.role }}
     app: {{ service.service }}-{{ service.role }}
   name: {{ service.service }}-{{ service.role }}
+  {%- else %}
+  labels:
+    name: {{ service.service }}
+    app: {{ service.service }}
+  name: {{ service.service }}
+  {%- endif %}
   namespace: {{ service.namespace }}
 spec:
   ports:
@@ -15,7 +22,11 @@ spec:
     {%- endfor %}
   type: {{ service.type }}
   selector:
+    {%- if service.role is defined %}
     app: {{ service.service }}-{{ service.role }}
+    {%- else %}
+    app: {{ service.service }}
+    {%- endif %}
   {%- if service.cluster_ip is defined %}
   clusterIP: {{ service.cluster_ip }}
   {%- endif %}

@@ -1,0 +1,18 @@
+{% from "kubernetes/map.jinja" import control with context %}
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ endpoint_name }}
+  {%- if endpoint.namespace is defined %}
+  namespace: {{ endpoint.namespace }}
+  {%- endif %}
+subsets:
+{%- for subset in endpoint.subsets %}
+  - addresses:
+      - ip: {{ subset.ip }}
+    ports:
+      - port: {{ subset.port.number }}
+      {%- if subset.port.name is defined %}
+        name: {{ subset.port.name }}
+      {%- endif %}
+{%- endfor %}

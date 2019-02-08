@@ -2,10 +2,18 @@
 apiVersion: {{ service.apiVersion }}
 kind: {{ service.kind }}
 metadata:
-  name: {{ service.service }}-{{ service.role }}
-  namespace: {{ service.namespace }}
+  {%- if service.role is defined %}
   labels:
+    name: {{ service.service }}-{{ service.role }}
     app: {{ service.service }}-{{ service.role }}
+  name: {{ service.service }}-{{ service.role }}
+  {%- else %}
+  labels:
+    name: {{ service.service }}
+    app: {{ service.service }}
+  name: {{ service.service }}
+  {%- endif %}
+  namespace: {{ service.namespace }}
 spec:
   replicas: {{ service.replicas }}
   {%- if service.kind == 'PetSet' %}
@@ -14,7 +22,11 @@ spec:
   template:
     metadata:
       labels:
+        {%- if service.role is defined %}
         app: {{ service.service }}-{{ service.role }}
+        {%- else %}
+        app: {{ service.service }}
+        {%- endif %}
       annotations:
       {%- if service.hostname is defined %}
         pod.beta.kubernetes.io/hostname: {{ service.hostname }}

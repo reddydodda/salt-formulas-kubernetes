@@ -15,6 +15,9 @@ include:
   {%- if control.priorityclass is defined %}
   - kubernetes.control.priorityclass
   {%- endif %}
+  {%- if control.endpoints is defined %}
+  - kubernetes.control.endpoint
+  {%- endif %}
 
 /srv/kubernetes:
   file.directory:
