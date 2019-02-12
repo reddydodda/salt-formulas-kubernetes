@@ -1,22 +1,21 @@
-{%- from "kubernetes/map.jinja" import common with context -%}
+{%- from "kubernetes/map.jinja" import common, master, pool with context -%}
 {%- if pillar.get('fluentd', {}).get('agent', {}).get('enabled', False) %}
-{%- from "kubernetes/map.jinja" import pool, master %}
-{%- if pool.get('enabled', False) %}
-{% set network = pool.get('network', {}) %}
-{%- else %}
-{%- if master.get('enabled', False) %}
-{% set network = master.get('network', {}) %}
-{% endif %}
-{% endif %}
+  {%- if pool.get('enabled', False) %}
+    {% set network = pool.get('network', {}) %}
+  {%- else %}
+    {%- if master.get('enabled', False) %}
+      {% set network = master.get('network', {}) %}
+    {% endif %}
+  {% endif %}
 
-{%- set positiondb = pillar.fluentd.agent.dir.positiondb %}
+  {%- set positiondb = pillar.fluentd.agent.dir.positiondb %}
 agent:
   plugin:
     fluent-plugin-kubernetes_metadata_filter:
       deb: ['td-agent-additional-plugins']
   config:
     label:
-      {%- if pillar.docker is defined %}
+  {%- if pillar.docker is defined %}
       docker:
         filter:
           add_drop_tag:
@@ -26,7 +25,7 @@ agent:
             record:
               - name: drop_event
                 value: ${ record.fetch('attrs', {}).fetch('io.kubernetes.pod.name', '') }
-      {%- endif %}
+  {%- endif %}
       kubernetes:
         input:
           container:
@@ -36,10 +35,16 @@ agent:
             path_key: log_path
             pos_file: {{ positiondb }}/kubernetes.pos
             parser:
+  {%- if pillar.docker is defined %}
               type: json
+  {%- else %}
+              # Containerd CRI log format https://regex101.com/r/BAw3bQ/1
+              type: regexp
+              format: /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<Payload>.*)$/
+  {%- endif %}
               time_format: '%Y-%m-%dT%H:%M:%S.%NZ'
               keep_time_key: false
-          {%- if network is defined and network.get('calico', {}).get('enabled', False) %}
+  {%- if network is defined and network.get('calico', {}).get('enabled', False) %}
           bird:
             type: tail
             tag: kubernetes.calico.bird
@@ -76,19 +81,19 @@ agent:
               time_key: Timestamp
               keep_time_key: false
               format: '/^(?<Timestamp>[^ ]+ [^ ]+) \[(?<orig_severity_label>[^ ]+)\]\[\d+?\] (?<Payload>.*)$/'
-          {%- endif %}
+  {%- endif %}
         filter:
           add_kubernetes_meta:
             tag: 'temp.kubernetes.container.**'
             type: kubernetes_metadata
             kubernetes_url: https://{{ pool.apiserver.host }}:{{ pool.apiserver.secure_port }}
-            {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+  {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
             client_cert: /etc/kubernetes/ssl/kubelet-client-fqdn.crt
             client_key: /etc/kubernetes/ssl/kubelet-client-fqdn.key
-            {%- else %}
+  {%- else %}
             client_cert: /etc/kubernetes/ssl/kubelet-client.crt
             client_key: /etc/kubernetes/ssl/kubelet-client.key
-            {%- endif %}
+  {%- endif %}
             ca_file: /etc/kubernetes/ssl/ca-kubernetes.crt
             verify_ssl: True
           enrich_container:
@@ -104,7 +109,7 @@ agent:
                 value: 6
               - name: programname
                 value: ${ record['kubernetes']['container_name'] }
-          {%- if network is defined and network.get('calico', {}).get('enabled', False) %}
+  {%- if network is defined and network.get('calico', {}).get('enabled', False) %}
           enrich_bird:
             tag: 'kubernetes.calico.bird'
             type: record_transformer
@@ -140,7 +145,7 @@ agent:
                 value: ${ {'DEBUG'=>7,'INFO'=>6,'WARNING'=>4,'ERROR'=>3,'FATAL'=>2,'PANIC'=>1}[record['orig_severity_label']].to_i }
               - name: programname
                 value: calico-felix
-          {%- endif %}
+  {%- endif %}
         match:
           cast_service_tag:
             tag: 'temp.kubernetes.container.**'
