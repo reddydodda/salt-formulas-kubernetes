@@ -192,6 +192,7 @@ criproxy_service:
   file.absent
 
 {%- if common.get('cloudprovider', {}).get('enabled') and common.get('cloudprovider', {}).get('provider') == 'openstack' %}
+{%- set cloudconfig_type = 'external' %}
 /etc/kubernetes/cloud-config:
   file.managed:
   - source: salt://kubernetes/files/cloudprovider/cloud-config-openstack.conf
@@ -199,6 +200,21 @@ criproxy_service:
   - user: root
   - group: root
   - mode: 600
+  - defaults:
+      cloudconfig_type: {{ cloudconfig_type }}
+
+{%- if pillar.kubernetes.master is defined %}
+{%- set cloudconfig_type = 'intree' %}
+/etc/kubernetes/cloud-config.intree:
+  file.managed:
+  - source: salt://kubernetes/files/cloudprovider/cloud-config-openstack.conf
+  - template: jinja
+  - user: root
+  - group: root
+  - mode: 600
+  - defaults:
+      cloudconfig_type: {{ cloudconfig_type }}
+{% endif %}
 
 {% endif %}
 
