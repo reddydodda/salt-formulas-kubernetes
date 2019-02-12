@@ -134,6 +134,12 @@ dockershim_service:
     - group: root
     - mode: 0750
 
+/var/log/criproxy:
+  file.directory:
+    - user: root
+    - group: root
+    - mode: 0750
+
 /etc/criproxy/node.conf:
   file.managed:
     - user: root
