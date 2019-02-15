@@ -47,9 +47,6 @@ parameters:
       ca: kubernetes
       storage:
         engine: none
-      namespace:
-        kube-system:
-          enabled: True
       network:
         calico:
           etcd:

@@ -344,7 +344,11 @@ kube_controller_mnanager_service:
 kubernetes_namespace_create_{{ name }}:
   cmd.run:
     - name: kubectl create ns "{{ name }}"
-    - name: kubectl get ns -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep "{{ name }}" > /dev/null || kubectl create ns "{{ name }}"
+    - unless: kubectl get ns -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep "{{ name }}"
+    - retry:
+        attempts: 3
+        until: True
+        interval: 10
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}
