@@ -24,7 +24,7 @@ ExecStart=/usr/bin/criproxy -alsologtostderr \
           {%- endif %}
           -listen /var/run/criproxy.sock \
           -v 3 \
-          -alsologtostderr \
+          -log_dir=/var/log/criproxy \
 {%- if salt['pkg.version_cmp'](version,'1.8') < 0 %}
           -apiVersion {{ version }} \
 {%- endif %}
