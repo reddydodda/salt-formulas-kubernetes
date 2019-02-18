@@ -18,6 +18,9 @@ include:
   {%- if control.endpoints is defined %}
   - kubernetes.control.endpoint
   {%- endif %}
+  {%- if control.ingress is defined %}
+  - kubernetes.control.ingress
+  {%- endif %}
 
 /srv/kubernetes:
   file.directory:

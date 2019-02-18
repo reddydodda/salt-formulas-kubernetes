@@ -20,7 +20,7 @@ include:
     {%- if service.get('create', false) %}
       {%- set service_real_name = service.service + '-' + service.role if service.role is defined else service.service %}
 kubernetes_service_create_{{ service_name }}:
-  cmd.run:
+  cmd.wait:
     - name: kubectl apply -f /srv/kubernetes/services/{{ service.cluster }}/{{ service_name }}-svc.yml
     - unless: kubectl get service -o=custom-columns=NAME:.metadata.name --namespace {{ service.namespace }} | grep -xq {{ service_real_name }}
     {%- if grains.get('noservices') %}
@@ -47,7 +47,7 @@ kubernetes_service_create_{{ service_name }}:
     {%- if service.get('create', false) %}
       {%- set service_real_name = service.service + '-' + service.role if service.role is defined else service.service %}
 kubernetes_{{ service.kind|lower }}_create_{{ service_name }}:
-  cmd.run:
+  cmd.wait:
     - name: kubectl apply -f /srv/kubernetes/{{ service.kind|lower }}/{{ service_name }}-{{ service.kind }}.yml
     - unless: kubectl get {{ service.kind|lower }} -o=custom-columns=NAME:.metadata.name --namespace {{ service.namespace }} | grep -xq {{ service_real_name }}
     {%- if grains.get('noservices') %}
@@ -80,7 +80,7 @@ kubernetes_{{ service.kind|lower }}_create_{{ service_name }}:
       {%- if service.get('create', false) %}
         {%- set service_real_name = service.service + '-' + service.role if service.role is defined else service.service %}
 kubernetes_service_create_{{ service.service }}:
-  cmd.run:
+  cmd.wait:
     - name: kubectl apply -f /srv/kubernetes/services/{{ node_name }}-svc.yml
     - unless: kubectl get service -o=custom-columns=NAME:.metadata.name --namespace {{ service.namespace }} | grep -xq {{ service_real_name }}
     {%- if grains.get('noservices') %}
@@ -106,7 +106,7 @@ kubernetes_service_create_{{ service.service }}:
     {%- if service.get('create', false) %}
       {%- set service_real_name = service.service + '-' + service.role if service.role is defined else service.service %}
 kubernetes_{{ service.kind|lower }}_create_{{ service_name }}:
-  cmd.run:
+  cmd.wait:
     - name: kubectl apply -f /srv/kubernetes/{{ service.kind|lower }}/{{ node_name }}-{{ service.kind }}.yml
     - unless: kubectl get {{ service.kind|lower }} -o=custom-columns=NAME:.metadata.name --namespace {{ service.namespace }} | grep -xq {{ service_real_name }}
     {%- if grains.get('noservices') %}

@@ -20,7 +20,7 @@ include:
     {%- if endpoint.get('create', false) %}
       {%- set service_name = endpoint.service + '-' + endpoint.role if endpoint.role is defined else endpoint.service %}
 kubernetes_service_create_{{ endpoint.service }}:
-  cmd.run:
+  cmd.wait:
     - name: kubectl apply -f /srv/kubernetes/services/{{ endpoint.cluster }}/{{ endpoint.service }}-svc.yml
     - unless: kubectl get service -o=custom-columns=NAME:.metadata.name --namespace {{ endpoint.namespace }} | grep -xq {{ endpoint.service }}
     {%- if grains.get('noservices') %}
@@ -47,7 +47,7 @@ kubernetes_service_create_{{ endpoint.service }}:
 
     {%- if endpoint.get('create', false) %}
 kubernetes_endpoint_create_{{ endpoint_name }}:
-  cmd.run:
+  cmd.wait:
     - name: kubectl apply -f /srv/kubernetes/endpoints/{{ endpoint.cluster }}/{{ endpoint_name }}.yml
     - unless: kubectl get endpoint -o=custom-columns=NAME:.metadata.name --namespace {{ endpoint.namespace }} | grep -xq {{ endpoint_name }}
     {%- if grains.get('noservices') %}

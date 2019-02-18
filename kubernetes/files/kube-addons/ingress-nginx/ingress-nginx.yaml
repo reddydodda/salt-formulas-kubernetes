@@ -86,6 +86,12 @@ metadata:
 
 kind: ConfigMap
 apiVersion: v1
+{%- if common.addons.get('ingress-nginx', {}).tcp_data is defined %}
+data:
+  {%- for key, value in common.addons.get('ingress-nginx').tcp_data.items() %}
+    {{ key }}: "{{ value }}"
+  {%- endfor %}
+{%- endif %}
 metadata:
   name: tcp-services
   namespace: ingress-nginx
@@ -97,6 +103,12 @@ metadata:
 
 kind: ConfigMap
 apiVersion: v1
+{%- if common.addons.get('ingress-nginx', {}).udp_data is defined %}
+data:
+  {%- for key, value in common.addons.get('ingress-nginx').udp_data.items() %}
+    {{ key }}: "{{ value }}"
+  {%- endfor %}
+{%- endif %}
 metadata:
   name: udp-services
   namespace: ingress-nginx
@@ -320,6 +332,18 @@ spec:
             containerPort: 80
           - name: https
             containerPort: 443
+          {%- if common.addons.get('ingress-nginx', {}).tcp_ports is defined %}
+            {%- for port in common.addons.get('ingress-nginx').tcp_ports %}
+          - name: tcp{{ port }}
+            containerPort: {{ port }}
+            {%- endfor %}
+          {%- endif %}
+          {%- if common.addons.get('ingress-nginx', {}).udp_ports is defined %}
+            {%- for port in common.addons.get('ingress-nginx').udp_ports %}
+          - name: udp{{ port }}
+            containerPort: {{ port }}
+            {%- endfor %}
+          {%- endif %}
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -364,5 +388,18 @@ spec:
     - name: https
       port: 443
       targetPort: https
-
+    {%- if common.addons.get('ingress-nginx', {}).tcp_ports is defined %}
+      {%- for port in common.addons.get('ingress-nginx').tcp_ports %}
+    - name: tcp{{ port }}
+      port: {{ port }}
+      targetPort: tcp{{ port }}
+      {%- endfor %}
+    {%- endif %}
+    {%- if common.addons.get('ingress-nginx', {}).udp_ports is defined %}
+      {%- for port in common.addons.get('ingress-nginx').udp_ports %}
+    - name: udp{{ port }}
+      port: {{ port }}
+      targetPort: udp{{ port }}
+      {%- endfor %}`
+    {%- endif %}
 ---

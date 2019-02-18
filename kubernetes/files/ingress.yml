@@ -1,0 +1,41 @@
+{% from "kubernetes/map.jinja" import control with context %}
+apiVersion: {{ ingress.apiVersion }}
+kind: Ingress
+metadata:
+  name: {{ ingress_name }}
+  namespace: {{ ingress.namespace }}
+  {%- if ingress.annotations is defined %}
+  annotations:
+    {%- for annotation in ingress.annotations %}
+    {{ annotation.name }}: "{{ annotation.value }}"
+    {%- endfor %}
+  {%- endif %}
+spec:
+  {%- if ingress.tls is defined %}
+  tls:
+  - hosts:
+    {%- for host in ingress.tls.hosts %}
+    - {{ host }}
+    {%- endfor %}
+    secretName: {{ ingress.tls.secret_name }}
+  {%- endif %}
+  {%- if ingress.rules is defined %}
+  rules:
+    {%- for host in ingress.rules.hosts %}
+  - {%- if host.name is defined %}
+    host: {{ host.name }}
+    {%- endif %}
+    http:
+      paths:
+      {%- for path, backend in host.paths.items() %}
+      - path: {{ path }}
+        backend:
+          serviceName: {{ backend.service }}
+          servicePort: {{ backend.port }}
+      {%- endfor %}
+    {%- endfor %}
+  {%- elif ingress.backend is defined %}
+  backend:
+    serviceName: {{ ingress.backend.service }}
+    servicePort: {{ ingress.backend.port }}
+  {%- endif %}
