@@ -104,6 +104,8 @@ spec:
           mountPath: /var/log/contrail
         - name: journal-controller
           mountPath: /var/log/journal
+        - name: var-log-configdb-zookeeper
+          mountPath: /var/log/zookeeper
         - name: etc-hostname
           mountPath: /etc/hostname
           readOnly: true
@@ -148,6 +150,8 @@ spec:
           mountPath: /var/log/contrail
         - name: journal-analyticsdb
           mountPath: /var/log/journal
+        - name: var-log-analyticsdb-zookeeper
+          mountPath: /var/log/zookeeper
         - name: etc-hostname
           mountPath: /etc/hostname
           readOnly: true
@@ -215,6 +219,10 @@ spec:
         hostPath:
           path:  /var/log/journal/contrail-controller
           type: DirectoryOrCreate
+      - name: var-log-configdb-zookeeper
+        hostPath:
+          path: /var/log/configdb/zookeeper
+          type: DirectoryOrCreate
 
       # analyticsdb
       - name: etc-cassandra-cassandra-env-analytics-sh
@@ -268,6 +276,10 @@ spec:
       - name: journal-analyticsdb
         hostPath:
           path:  /var/log/journal/contrail-analyticsdb
+          type: DirectoryOrCreate
+      - name: var-log-analyticsdb-zookeeper
+        hostPath:
+          path: /var/log/analyticsdb/zookeeper
           type: DirectoryOrCreate
 
       # analytics
