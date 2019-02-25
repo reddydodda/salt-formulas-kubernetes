@@ -1,5 +1,14 @@
 {%- from "kubernetes/map.jinja" import common with context -%}
 {%- from "kubernetes/map.jinja" import master with context -%}
+
+{%- if  master.network.get('opencontrail',{}).get('version', 4.0)  >= 4.1 %}
+  {%- set kafka_path = "/etc/kafka" %}
+  {%- set kafka_path_log = "/var/log/kafka" %}
+
+{%- else %}
+  {%- set kafka_path = "/usr/share/kafka/config" %}
+  {%- set kafka_path_log = "/usr/share/kafka/logs" %}
+{%- endif %}
 ---
 
 apiVersion: apps/v1beta2
@@ -134,14 +143,14 @@ spec:
           mountPath: /var/lib/zookeeper
         - name: var-lib-zookeeper-myid
           mountPath: /var/lib/zookeeper/myid
-        - name: usr-share-kafka-config-server-properties
-          mountPath: /usr/share/kafka/config/server.properties
-        - name: usr-share-kafka-config-consumer-properties
-          mountPath: /usr/share/kafka/config/consumer.properties
-        - name: usr-share-kafka-config-zookeeper-properties
-          mountPath: /usr/share/kafka/config/zookeeper.properties
-        - name: usr-share-kafka-logs
-          mountPath: /usr/share/kafka/logs
+        - name: kafka-config-server-properties
+          mountPath: {{ kafka_path }}/server.properties
+        - name: kafka-config-consumer-properties
+          mountPath: {{ kafka_path }}/consumer.properties
+        - name: kafka-config-zookeeper-properties
+          mountPath: {{ kafka_path }}/zookeeper.properties
+        - name: kafka-logs
+          mountPath: {{ kafka_path_log }}
         - name: etc-zookeeper-conf-zoo-analytics-cfg
           mountPath: /etc/zookeeper/conf/zoo.cfg
         - name: etc-zookeeper-conf-log4j-properties
@@ -249,21 +258,21 @@ spec:
         hostPath:
           path: /var/lib/zookeeper/myid
           type: File
-      - name: usr-share-kafka-config-server-properties
+      - name: kafka-config-server-properties
         hostPath:
-          path: /usr/share/kafka/config/server.properties
+          path: {{ kafka_path }}/server.properties
           type: File
-      - name: usr-share-kafka-config-consumer-properties
+      - name: kafka-config-consumer-properties
         hostPath:
-          path: /usr/share/kafka/config/consumer.properties
+          path: {{ kafka_path }}/consumer.properties
           type: File
-      - name: usr-share-kafka-config-zookeeper-properties
+      - name: kafka-config-zookeeper-properties
         hostPath:
-          path: /usr/share/kafka/config/zookeeper.properties
+          path: {{ kafka_path }}/zookeeper.properties
           type: File
-      - name: usr-share-kafka-logs
+      - name: kafka-logs
         hostPath:
-          path: /usr/share/kafka/logs
+          path: {{ kafka_path_log }}
           type: DirectoryOrCreate
       - name: etc-zookeeper-conf-zoo-analytics-cfg
         hostPath:
