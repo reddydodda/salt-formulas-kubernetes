@@ -353,7 +353,12 @@ kubernetes_namespace_create_{{ name }}:
 
 kubernetes_namespace_delete_{{ name }}:
   cmd.run:
-    - name: kubectl get ns -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep "{{ name }}" > /dev/null && kubectl delete ns "{{ name }} || true"
+    - name: kubectl delete ns "{{ name }}"
+    - onlyif:
+      - kubectl get ns -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep "{{ name }}" > /dev/null
+      {%- if grains.get('noservices') %}
+      - /bin/false
+      {%- endif %}
 
 {%- endif %}
 
