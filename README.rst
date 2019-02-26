@@ -1185,6 +1185,29 @@ namespace:
                   test:
                     kind: User
 
+Manage client (kubectl resources)
+Assign labels to nodes:
+
+.. code-block:: yaml
+
+    kubernetes:
+      client:
+        enabled: true
+        apiserver:
+          insecure_address: 0.0.0.0
+          insecure_port: 8080
+        resources:
+          enabled: true
+          label:
+            test:
+              value: enabled
+              status: 'present'
+              node:
+               - cmp1
+               - cmp2
+              enabled: true
+              key: mylabel
+
 More Information
 ================
 

@@ -10,4 +10,7 @@ include:
 {%- if pillar.kubernetes.control is defined %}
 - kubernetes.control
 {%- endif %}
+{%- if pillar.kubernetes.client is defined %}
+- kubernetes.client
+{%- endif %}
 {%- endif %}
