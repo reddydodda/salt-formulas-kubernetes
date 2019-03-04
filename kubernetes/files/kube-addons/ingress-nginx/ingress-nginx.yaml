@@ -376,7 +376,7 @@ metadata:
     app.kubernetes.io/part-of: ingress-nginx
     addonmanager.kubernetes.io/mode: Reconcile
 spec:
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: {{ common.addons.get('ingress-nginx', {}).get('externalTrafficPolicy', 'Local') }}
   type: LoadBalancer
   selector:
     app.kubernetes.io/name: ingress-nginx
