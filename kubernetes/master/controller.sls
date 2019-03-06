@@ -334,6 +334,7 @@ kube_controller_mnanager_service:
 
 {%- endif %}
 
+{%- if master.namespace is defined %}
 
 {%- for name,namespace in master.namespace.items() %}
 
@@ -367,6 +368,8 @@ kubernetes_namespace_delete_{{ name }}:
 {%- endif %}
 
 {%- endfor %}
+
+{%- endif %}
 
 {%- if master.registry.secret is defined %}
 
