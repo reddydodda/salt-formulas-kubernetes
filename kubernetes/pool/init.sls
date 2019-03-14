@@ -23,3 +23,6 @@ include:
 {%- if common.addons.get('virtlet', {}).get('use_apparmor') and not pillar.get('kubernetes', {}).get('master', False) %}
 - kubernetes.pool.virtlet-apparmor
 {%- endif %}
+{%- if pool.get('images', {}) %}
+- kubernetes.pool.images
+{%- endif %}
