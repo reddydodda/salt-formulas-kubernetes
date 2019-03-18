@@ -51,16 +51,10 @@ verifier:
   sudo: true
 
 docker_images:
-  - &xenial-20163 <%=ENV['IMAGE_XENIAL_20163'] || 'docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2016.3/salt:2018_11_19'%>
   - &xenial-20177 <%=ENV['IMAGE_XENIAL_20177'] || 'docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-2017.7/salt:2018_11_19'%>
   - &xenial-stable <%=ENV['IMAGE_XENIAL_STABLE'] || 'docker-dev-local.docker.mirantis.net/epcim/salt/saltstack-ubuntu-xenial-salt-stable/salt:2018_11_19'%>
 
 platforms:
-  - name: xenial-2016.3
-    driver_config:
-      image: *xenial-20163
-      platform: ubuntu
-
   - name: xenial-2017.7
     driver_config:
       image: *xenial-20177
