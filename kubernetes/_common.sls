@@ -36,6 +36,7 @@ containerd_pkg:
 /etc/containerd/config.toml:
   file.managed:
   - source: salt://kubernetes/files/containerd/config.toml
+  - makedirs: True
   - template: jinja
   - user: root
   - group: root
