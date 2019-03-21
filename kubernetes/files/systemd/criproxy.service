@@ -16,7 +16,7 @@ Requires=dockershim.service
 [Service]
 SyslogIdentifier=criproxy
 User=root
-ExecStart=/usr/bin/criproxy -alsologtostderr \
+ExecStart=/usr/bin/criproxy -logtostderr \
           {%- if common.get('containerd', {}).get('enabled') %}
           -connect /run/containerd/containerd.sock,virtlet.cloud:/run/virtlet.sock \
           {%- else %}
@@ -24,7 +24,6 @@ ExecStart=/usr/bin/criproxy -alsologtostderr \
           {%- endif %}
           -listen /var/run/criproxy.sock \
           -v 3 \
-          -log_dir=/var/log/criproxy \
 {%- if salt['pkg.version_cmp'](version,'1.8') < 0 %}
           -apiVersion {{ version }} \
 {%- endif %}
