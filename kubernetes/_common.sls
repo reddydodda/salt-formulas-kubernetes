@@ -317,5 +317,5 @@ kubelet_service:
     - options: xzf
     {%- endif %}
     - archive_format: tar
-    - if_missing: /opt/cni/bin/host-local
+    - overwrite: true
 {%- endif %}
