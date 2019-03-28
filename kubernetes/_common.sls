@@ -319,3 +319,28 @@ kubelet_service:
     - archive_format: tar
     - overwrite: true
 {%- endif %}
+
+{%- if common.addons.get('helm', {'enabled': False}).enabled %}
+extract_helm:
+  archive.extracted:
+    - name: /tmp/helm
+    - source: {{ common.addons.helm.client.source }}
+    - source_hash: {{ common.addons.helm.client.hash }}
+    {%- if grains['saltversioninfo'] < [2017, 7] %}
+    - tar_options: xzf
+    {%- else %}
+    - options: xzf
+    {%- endif %}
+    - archive_format: tar
+    - keep: true
+
+/usr/local/bin/helm:
+  file.managed:
+  - source: /tmp/helm/linux-amd64/helm
+  - mode: 755
+  - owner: root
+  - group: root
+  - require:
+    - archive: extract_helm
+
+{%- endif %}
