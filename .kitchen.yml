@@ -18,9 +18,11 @@ provisioner:
     - name: linux
       repo: git
       source: https://github.com/salt-formulas/salt-formula-linux
+      branch: <%=ENV['GERRIT_BRANCH'] || 'master' %>
     - name: contrail
       repo: git
       source: https://github.com/salt-formulas/salt-formula-opencontrail
+      branch: <%=ENV['GERRIT_BRANCH'] || 'master' %>
 
   state_top:
     base:
