@@ -115,6 +115,13 @@ dockershim_service:
   - onlyif: /bin/false
   {%- endif %}
 
+{%- else %}
+
+dockershim_service:
+  service.dead:
+  - name: dockershim
+  - enable: False
+
 {%- endif %}
 
 /usr/bin/criproxy:
@@ -161,6 +168,10 @@ criproxy_service:
   - name: criproxy
   - enable: True
   - watch:
+    - file: /etc/systemd/system/criproxy.service
+    - file: /etc/criproxy/node.conf
+    - file: /usr/bin/criproxy
+  - require:
     - file: /etc/systemd/system/criproxy.service
     - file: /etc/criproxy/node.conf
     - file: /usr/bin/criproxy
