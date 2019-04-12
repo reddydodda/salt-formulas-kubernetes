@@ -1,5 +1,8 @@
 {% from "kubernetes/map.jinja" import control with context %}
 include:
+  {%- if control.endpoints is defined %}
+  - kubernetes.control.endpoint
+  {%- endif %}
   {%- if control.job is defined %}
   - kubernetes.control.job
   {%- endif %}
@@ -14,9 +17,6 @@ include:
   {%- endif %}
   {%- if control.priorityclass is defined %}
   - kubernetes.control.priorityclass
-  {%- endif %}
-  {%- if control.endpoints is defined %}
-  - kubernetes.control.endpoint
   {%- endif %}
   {%- if control.ingress is defined %}
   - kubernetes.control.ingress
