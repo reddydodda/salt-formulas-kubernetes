@@ -1,3 +1,4 @@
+{%- from "kubernetes/map.jinja" import master with context -%}
 {%- from "kubernetes/map.jinja" import full_version -%}
 ---
 apiVersion: v1
@@ -37,13 +38,28 @@ rules:
   verbs:
   - '*'
 ---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: root-conformance-binding
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: Group
+    name: system:nodes
+    apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: conformance
   namespace: conformance
 spec:
+{%- if not master.network.get('opencontrail',{}).get('enabled', False) %}
   hostNetwork: true
+{%- endif %}
   restartPolicy: Never
   serviceAccountName: conformance
   affinity:
@@ -51,7 +67,11 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
+{%- if master.network.get('opencontrail',{}).get('enabled', False) %}
+          - key: node-role.kubernetes.io/node
+{%- else %}
           - key: node-role.kubernetes.io/master
+{%- endif %}
             operator: In
             values:
             - "true"
@@ -69,18 +89,44 @@ spec:
       privileged: true
     env:
     - name: API_SERVER
+{%- if master.network.get('opencontrail',{}).get('enabled', False) %}
+      value: https://10.254.0.1:443
+{%- else %}
       value: http://localhost:8080
+{%- endif %}
 # Uncomment to use FOCUS for conformance runs
 #    - name: FOCUS
 #      value: "Conformance"
 #    - name: CONCURRENCY
 #      value: 25
+{%- if master.network.get('opencontrail',{}).get('enabled', False) %}
+    - name: K8S_CA
+      value: /ssl/ca-kubernetes.crt
+    - name: KUBELET_CERT
+      value: /ssl/kubelet-client.crt
+    - name: KUBELET_KEY
+      value: /ssl/kubelet-client.key
+{%- else %}
+# Needed to use only https secured endpoint
+#    - name: K8S_CA
+#      value: /ssl/ca-kubernetes.crt
+#    - name: KUBELET_CERT
+#    value: /ssl/kubelet-client.crt
+#    - name: KUBELET_KEY
+#    value: /ssl/kubelet-client.key
+{%- endif %}
     image: docker-prod-local.artifactory.mirantis.com/mirantis/kubernetes/k8s-conformance:v{{ full_version }}
     volumeMounts:
     - mountPath: /report
       name: output-volume
       mountPropagation: Bidirectional
+    - mountPath: /ssl
+      name: ssl-auth
+      readOnly: true
   volumes:
   - hostPath:
       path: /tmp/conformance
     name: output-volume
+  - hostPath:
+      path: /etc/kubernetes/ssl
+    name: ssl-auth
