@@ -17,6 +17,7 @@ include:
     - file: /srv/kubernetes
   - defaults:
       secret: {{ secret|yaml }}
+      secret_name: {{ secret_name }}
 
     {%- if secret.get('create', false) %}
   cmd.wait:
