@@ -6,6 +6,9 @@ include:
   {%- if control.job is defined %}
   - kubernetes.control.job
   {%- endif %}
+  {%- if control.secret is defined %}
+  - kubernetes.control.secret
+  {%- endif %}
   {%- if control.service is defined %}
   - kubernetes.control.service
   {%- endif %}
