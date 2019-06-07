@@ -3,14 +3,16 @@
 
 {% set common = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['curl', 'git', 'apt-transport-https', 'python-apt', 'socat', 'openssl', 'conntrack'],
+        'pkgs': ['curl', 'git', 'apt-transport-https', 'python-apt', 'socat', 'openssl', 'conntrack', 'nfs-common', 'cifs-utils'],
         'services': [],
         'version': version|float,
+        'helm_home': '/root/.helm',
     },
     'RedHat': {
         'pkgs': ['curl', 'git', 'socat', 'python', 'openssl'],
         'services': [],
         'version': version|float,
+        'helm_home': '/root/.helm',
     },
 }, merge=salt['pillar.get']('kubernetes:common')) %}
 
@@ -112,6 +114,12 @@
 }, merge=salt['pillar.get']('kubernetes:control')) %}
 
 {% set client = salt['grains.filter_by']({
+'Debian': {
+        'pkgs': ['python-openstackclient', 'python-ironicclient', 'python-heatclient'],
+    },
+    'RedHat': {
+        'pkgs': ['python-openstackclient', 'python-ironicclient', 'python-heatclient'],
+    },
 }, merge=salt['pillar.get']('kubernetes:client')) %}
 
 {%- set monitoring = salt['grains.filter_by']({

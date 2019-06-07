@@ -1208,6 +1208,31 @@ Assign labels to nodes:
               enabled: true
               key: mylabel
 
+Install Helm charts:
+
+.. code-block:: yaml
+
+    kubernetes:
+      client:
+        helm:
+          enabled: True
+          repos:
+            repo1:
+              enabled: True
+              repository:
+                test: https://mirantisworkloads.storage.googleapis.com/
+          charts:
+            010_ingress_kube_system:
+              enabled: True
+              release: ingress-kube-system
+              chart_name: local/ingress
+              namespace: kube-system
+              values:
+                deployment:
+                  mode: cluster
+                  type: DaemonSet
+                network:
+                  host_namespace: True
 More Information
 ================
 

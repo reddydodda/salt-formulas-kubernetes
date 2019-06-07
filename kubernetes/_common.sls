@@ -354,4 +354,12 @@ extract_helm:
   - require:
     - archive: extract_helm
 
+helm_client_init:
+  cmd.run:
+    - name: "helm init --client-only"
+    - env:
+      - HELM_HOME: {{ common.helm_home }}
+    - require:
+      - file: /usr/local/bin/helm
+
 {%- endif %}
