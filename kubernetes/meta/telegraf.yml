@@ -44,13 +44,13 @@ agent:
         calico-docker:
           pattern: "docker run .*projectcalico/calico/node"
         calico-felix:
-          exe: calico-felix
+          pattern: "calico-node -felix"
         bird:
           pattern: "bird .*/etc/calico/.*/bird.cfg"
         bird6:
           pattern: "bird6 .*/etc/calico/.*/bird6.cfg"
         confd:
-          pattern: "confd .*/etc/calico/confd"
+          pattern: "calico-node -confd"
     calico:
       template: kubernetes/files/calico_telegraf.conf
       sockets: {{ sockets | default(["/var/run/calico/bird.ctl"]) | yaml }}
