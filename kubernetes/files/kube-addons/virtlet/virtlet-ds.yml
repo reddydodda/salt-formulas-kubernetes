@@ -170,6 +170,8 @@ spec:
           name: libvirt-log
         - mountPath: /dev
           name: dev
+        - mountPath: /etc/libvirt/qemu
+          name: qemu
 
       - name: virtlet
         image: {{ common.addons.virtlet.image }}
@@ -184,6 +186,8 @@ spec:
         securityContext:
           privileged: true
         volumeMounts:
+        - mountPath: /etc/libvirt/qemu
+          name: qemu
         - mountPath: /run
           name: run
         - mountPath: /lib/modules
@@ -294,6 +298,9 @@ spec:
       - configMap:
           name: virtlet-image-translations
         name: image-name-translations
+      - hostPath:
+          path: /etc/libvirt/qemu
+        name: qemu
   updateStrategy:
     type: OnDelete
 
