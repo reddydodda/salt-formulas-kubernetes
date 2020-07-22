@@ -26,6 +26,6 @@ include:
 {%- if pool.get('images', {}) %}
 - kubernetes.pool.images
 {%- endif %}
-{%- if common.addons.get('multus', {}).get('enabled' False) %}
+{%- if common.addons.get('multus', {}).get('enabled', False) %}
 - kubernetes.pool.multus
 {%- endif %}

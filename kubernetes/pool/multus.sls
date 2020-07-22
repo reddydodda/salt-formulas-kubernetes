@@ -1,9 +1,9 @@
 {%- from "kubernetes/map.jinja" import pool with context %}
-{%- if common.addons.get('multus', {}).get('enabled') %}
+{%- if pool.enabled %}
 
 /etc/cni/net.d/00-multus.conf:
   file.managed:
-    - source: salt://kubernetes/files/multus/multus.conf
+    - source: salt://kubernetes/files/kube-addons/multus/multus.conf
     - user: root
     - group: root
     - mode: 644
