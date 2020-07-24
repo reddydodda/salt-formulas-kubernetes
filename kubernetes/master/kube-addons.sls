@@ -532,36 +532,4 @@ core_dns_service_absent:
 {% endif %}
 {% endif %}
 
-{%- if common.addons.get('multus', {}).get('enabled') %}
-
-/etc/kubernetes/addons/multus/multus-crd.yml:
-  file.managed:
-    - source: salt://kubernetes/files/kube-addons/multus/multus-crd.yml
-    - template: jinja
-    - group: root
-    - dir_mode: 755
-    - makedirs: True
-
-{% endif %}
-
-{%- if common.addons.get('kubevirt', {}).get('enabled') %}
-
-/etc/kubernetes/addons/kubevirt/kubevirt-operator.yml:
-  file.managed:
-    - source: salt://kubernetes/files/kube-addons/kubevirt/kubevirt-operator.yml
-    - template: jinja
-    - group: root
-    - dir_mode: 755
-    - makedirs: True
-
-/etc/kubernetes/addons/kubevirt/kubevirt-cr.yml:
-  file.managed:
-    - source: salt://kubernetes/files/kube-addons/kubevirt/kubevirt-cr.yml
-    - template: jinja
-    - group: root
-    - dir_mode: 755
-    - makedirs: True
-
-{% endif %}
-
 {% endif %}
