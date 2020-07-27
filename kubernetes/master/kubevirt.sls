@@ -28,6 +28,9 @@ kubernetes_multus_crd_delete:
     - name: kubectl delete -f /etc/kubernetes/kubevirt/multus-crd.yml
     - onlyif: "kubectl get sa -n kube-system -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep multus"
 
+/etc/cni/net.d/00-multus.conf:
+  file.absent
+
 {% endif %}
 
 {%- if common.addons.get('kubevirt', {}).get('enabled') %}
