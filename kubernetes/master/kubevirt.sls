@@ -7,7 +7,7 @@
 
 /etc/kubernetes/kubevirt/multus-crd.yml:
   file.managed:
-    - source: salt://kubernetes/files/kubevirt/multus-crd.yml
+    - source: salt://kubernetes/files/kube-addons/multus/multus-crd.yml
     - template: jinja
     - group: root
     - dir_mode: 755
@@ -21,18 +21,20 @@ kubernetes_multus_crd_create:
 
 {% endif %}
 
+{%- if not common.addons.get('multus', {}).get('enabled') %}
+
 kubernetes_multus_crd_delete:
   cmd.run:
     - name: kubectl delete -f /etc/kubernetes/kubevirt/multus-crd.yml
-    - onlyif: "{%- if common.addons.get('multus', {}).get('enabled') == 'false' or common.addons.get('multus', {}).get('enabled') == 'False' %}"
-    - require:
-      - file: /etc/kubernetes/kubevirt/multus-crd.yml
+    - onlyif: "kubectl get sa -n kube-system -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep multus"
+
+{% endif %}
 
 {%- if common.addons.get('kubevirt', {}).get('enabled') %}
 
 /etc/kubernetes/kubevirt/kubevirt-operator.yml:
   file.managed:
-    - source: salt://kubernetes/files/kubevirt/kubevirt-operator.yml
+    - source: salt://kubernetes/files/kube-addons/kubevirt/kubevirt-operator.yml
     - template: jinja
     - group: root
     - dir_mode: 755
@@ -40,7 +42,7 @@ kubernetes_multus_crd_delete:
 
 /etc/kubernetes/kubevirt/kubevirt-cr.yml:
   file.managed:
-    - source: salt://kubernetes/files/kubevirt/kubevirt-cr.yml
+    - source: salt://kubernetes/files/kube-addons/kubevirt/kubevirt-cr.yml
     - template: jinja
     - group: root
     - dir_mode: 755
@@ -60,18 +62,18 @@ kubernetes_kubevirt_cr_create:
 
 {% endif %}
 
-kubernetes_kubevirt_operator_delete:
-  cmd.run:
-    - name: kubectl delete -f /etc/kubernetes/kubevirt/kubevirt-operator.yml
-    - onlyif: "{%- if common.addons.get('kubevirt', {}).get('enabled') == 'false' or common.addons.get('kubevirt', {}).get('enabled') == 'False' %}"
-    - require:
-      - file: /etc/kubernetes/kubevirt/kubevirt-operator.yml
+{%- if not common.addons.get('kubevirt', {}).get('enabled') %}
 
 kubernetes_kubevirt_cr_delete:
   cmd.run:
     - name: kubectl delete -f /etc/kubernetes/kubevirt/kubevirt-cr.yml
-    - onlyif: "{%- if common.addons.get('kubevirt', {}).get('enabled') == 'false' or common.addons.get('kubevirt', {}).get('enabled') == 'False' %}"
-    - require:
-      - file: /etc/kubernetes/kubevirt/kubevirt-cr.yml
+    - onlyif: "kubectl get ns -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep kubevirt"
+
+kubernetes_kubevirt_operator_delete:
+  cmd.run:
+    - name: kubectl delete -f /etc/kubernetes/kubevirt/kubevirt-operator.yml
+    - onlyif: "kubectl get ns -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep kubevirt"
+
+{% endif %}
 
 {% endif %}

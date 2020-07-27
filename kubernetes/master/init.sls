@@ -26,3 +26,4 @@ include:
 {%- endif %}
 - kubernetes.master.controller
 - kubernetes.master.setup
+- kubernetes.master.kubevirt
