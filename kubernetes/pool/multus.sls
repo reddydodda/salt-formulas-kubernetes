@@ -11,4 +11,11 @@
     - dir_mode: 755
     - template: jinja
 
+{%- if not pool.network.get('multus', {}).get('enabled') %}
+
+/etc/cni/net.d/00-multus.conf:
+  file.absent
+
+{%- endif %}
+
 {%- endif %}
