@@ -1,0 +1,30 @@
+{%- from "kubernetes/map.jinja" import common with context -%}
+{%- from "kubernetes/map.jinja" import pool with context -%}
+{%- if pool.network.get('multus', {}).get('enabled') %}
+---
+{%- for delagates in pool.network.get('multus', {}).delegates %}
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: {{ delagates.name }}
+  {%- if delagates.type == "sriov" %}
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: intel.com/intel_sriov_netdevice_{{ delagates.phy_interface }}
+  {%- endif %}
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "type": "{{ delagates.type }}",
+      "name": "{{ delagates.name }}",
+      {%- if delagates.type == "sriov" %}
+      "master": "{{ delagates.phy_interface }}",
+      {%- elif delagates.type == "bridge" %}
+      "bridge": "{{ delagates.phy_interface }}",
+      "isGateway": false,
+      {%- endif %}
+      "ipam": {}
+    }
+---
+{%- endfor %}
+{%- endif %}

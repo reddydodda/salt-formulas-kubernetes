@@ -13,15 +13,34 @@
     - dir_mode: 755
     - makedirs: True
 
+/etc/kubernetes/kubevirt/multus-nad.yml:
+  file.managed:
+    - source: salt://kubernetes/files/kube-addons/multus/multus-nad.yml
+    - template: jinja
+    - group: root
+    - dir_mode: 755
+    - makedirs: True
+
 kubernetes_multus_crd_create:
   cmd.run:
     - name: kubectl apply -f /etc/kubernetes/kubevirt/multus-crd.yml
     - require:
       - file: /etc/kubernetes/kubevirt/multus-crd.yml
 
+kubernetes_multus_nad_create:
+  cmd.run:
+    - name: kubectl apply -f /etc/kubernetes/kubevirt/multus-nad.yml
+    - require:
+      - file: /etc/kubernetes/kubevirt/multus-nad.yml
+
 {% endif %}
 
 {%- if not common.addons.get('multus', {}).get('enabled') %}
+
+kubernetes_multus_nad_delete:
+  cmd.run:
+    - name: kubectl delete -f /etc/kubernetes/kubevirt/multus-nad.yml
+    - onlyif: "kubectl get sa -n kube-system -o=custom-columns=NAME:.metadata.name | grep -v NAME | grep multus"
 
 kubernetes_multus_crd_delete:
   cmd.run:
